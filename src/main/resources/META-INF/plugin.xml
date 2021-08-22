@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>com.github.intellij.ginkgo</id>
+    <vendor>IdeaGinkgo</vendor>
+    <name>IdeaGinkgo</name>
+    <version>0.0.1</version>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.plugins.go</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Ginkgo"
+                  implementationClass="com.github.idea.ginkgo.file.GinkgoFileType"
+                  order="first"/>
+        <configurationType implementation="com.github.idea.ginkgo.GinkgoConfigurationType"/>
+        <runLineMarkerContributor language="go"
+                                  implementationClass="com.github.idea.ginkgo.GinkgoRunLineMarkerProvider"/>
+        <runConfigurationProducer id="GinkgoRunConfigurationProducer"
+                                  implementation="com.github.idea.ginkgo.GinkgoRunConfigurationProducer"
+                                  order="after GoApplicationRunConfigurationProducer"/>
+    </extensions>
+</idea-plugin>
