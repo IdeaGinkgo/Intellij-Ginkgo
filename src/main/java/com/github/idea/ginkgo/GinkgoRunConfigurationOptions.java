@@ -1,12 +1,18 @@
 package com.github.idea.ginkgo;
 
+import com.goide.GoEnvironmentUtil;
 import com.goide.GoOsManager;
 import com.goide.project.DefaultGoRootsProvider;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import jnr.ffi.Struct;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +62,38 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
 
     @NotNull
     private String findGinkgoExecutable(Project project) {
-        String goBinPath = new DefaultGoRootsProvider().getGoPathBinRoots(project, null).stream().findFirst().get().getPath();
-        if(GoOsManager.isWindows()) {
-            return Paths.get(goBinPath, "ginkgo.exe").toString();
+        String ginkgoExecutable = findGinkgoInGoPath(project);
+        return StringUtils.isNotEmpty(ginkgoExecutable) ? ginkgoExecutable : findGinkgoByEnv();
+    }
+
+    @NotNull
+    public String findGinkgoInGoPath(Project project) {
+        return new DefaultGoRootsProvider().getGoPathBinRoots(project, null).stream()
+                .map(f -> GoOsManager.isWindows() ? f.findChild("ginkgo.exe") : f.findChild("ginkgo"))
+                .filter(f -> f != null)
+                .map(VirtualFile::getPath)
+                .findFirst()
+                .orElse("");
+    }
+
+    @NotNull
+    public String findGinkgoByEnv() {
+        String goBinPath = GoEnvironmentUtil.retrieveGoBinFromEnvironment();
+        if (GoOsManager.isWindows()) {
+            String ginkgoPath = Paths.get(goBinPath, "ginkgo.exe").toString();
+            if (new File(ginkgoPath).exists()) {
+                return ginkgoPath;
+            }
         }
-        return Paths.get(goBinPath, "ginkgo").toString();
+
+        if (GoOsManager.isLinux() || GoOsManager.isMac()) {
+            String ginkgoPath = Paths.get(goBinPath, "ginkgo").toString();
+            if (new File(ginkgoPath).exists()) {
+                return ginkgoPath;
+            }
+        }
+
+        return "";
     }
 
     public static class RunConfigBuilder {
