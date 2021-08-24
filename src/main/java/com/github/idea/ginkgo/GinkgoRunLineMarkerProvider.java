@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     private static final Function<PsiElement, String> TOOLTIP_PROVIDER = (element) -> "Ginkgo Test";
-    private final List<String> SpecNodes = Arrays.asList("Describe", "Context", "It", "Specify");
+    private final List<String> SpecNodes = Arrays.asList("Describe", "Context", "When", "It", "Specify");
 
     @Override
     @Nullable
