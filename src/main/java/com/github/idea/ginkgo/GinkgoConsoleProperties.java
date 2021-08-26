@@ -17,6 +17,6 @@ public class GinkgoConsoleProperties extends SMTRunnerConsoleProperties implemen
 
     @NotNull
     public OutputToGeneralTestEventsConverter createTestEventsConverter(@NotNull String testFrameworkName, @NotNull TestConsoleProperties consoleProperties) {
-        return new GotestEventsConverter(testFrameworkName, consoleProperties);
+        return new GinkgoTestEventsConverter(testFrameworkName, consoleProperties);
     }
 }
