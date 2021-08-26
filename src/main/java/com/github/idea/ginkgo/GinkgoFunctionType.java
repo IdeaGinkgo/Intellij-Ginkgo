@@ -5,7 +5,12 @@ public enum GinkgoFunctionType {
     CONTEXT("Context"),
     WHEN("When"),
     IT("It"),
-    SPECIFY("Specify");
+    SPECIFY("Specify"),
+    FDESCRIBE("FDescribe"),
+    FCONTEXT("FContext"),
+    FWHEN("FWhen"),
+    FIT("FIt"),
+    FSPECIFY("FSpecify");
 
     private final String specType;
 
