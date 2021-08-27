@@ -5,3 +5,9 @@
 ## [Unreleased]
 ### Added
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- `When` spec line marker
+- Focused spec line markers
+- Improved ginkgo executable detection
+
+### Fixed
+- Hopefully improved test runner experience
