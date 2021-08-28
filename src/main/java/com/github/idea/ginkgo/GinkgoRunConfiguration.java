@@ -10,9 +10,12 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRunConfiguration> {
     @NotNull
@@ -39,7 +42,13 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        super.checkConfiguration();
+        if (StringUtils.isEmpty(myOptions.getGinkgoExecutable())) {
+            throw new RuntimeConfigurationException("Ginkgo executable is required");
+        }
+
+        if (!new File(myOptions.getGinkgoExecutable()).exists()) {
+            throw new RuntimeConfigurationException("Ginkgo executable is invalid");
+        }
     }
 
     @Nullable

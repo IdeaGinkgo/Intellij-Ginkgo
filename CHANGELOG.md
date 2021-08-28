@@ -8,6 +8,7 @@
 - `When` spec line marker
 - Focused spec line markers
 - Improved ginkgo executable detection
+- Added configuration checks
 
 ### Fixed
 - Hopefully improved test runner experience
