@@ -11,3 +11,4 @@
 
 ### Fixed
 - Hopefully improved test runner experience
+- Removed recursive flag for focus tests

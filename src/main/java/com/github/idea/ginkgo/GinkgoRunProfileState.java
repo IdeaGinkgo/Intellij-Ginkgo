@@ -64,6 +64,6 @@ public class GinkgoRunProfileState implements RunProfileState {
         if (StringUtils.isEmpty(runOptions.getGinkgoOptions())) {
             return new GeneralCommandLine(runOptions.getGinkgoExecutable(), "-r", "-v");
         }
-        return new GeneralCommandLine(runOptions.getGinkgoExecutable(), "-r", "-v", runOptions.getGinkgoOptions());
+        return new GeneralCommandLine(runOptions.getGinkgoExecutable(), "-v", runOptions.getGinkgoOptions());
     }
 }
