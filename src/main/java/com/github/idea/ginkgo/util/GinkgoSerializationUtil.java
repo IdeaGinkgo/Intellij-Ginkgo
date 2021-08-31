@@ -1,6 +1,7 @@
 package com.github.idea.ginkgo.util;
 
 import com.github.idea.ginkgo.GinkgoRunConfigurationOptions;
+import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.openapi.util.JDOMExternalizerUtil;
 import com.intellij.openapi.util.io.FileUtil;
@@ -15,21 +16,26 @@ import java.util.List;
 
 public class GinkgoSerializationUtil {
     public static final GinkgoSerializationUtil INSTANCE = new GinkgoSerializationUtil();
-    private static final String TEST_NAMES = "test-names";
-    private static final String TEST_NAME = "test-name";
     private static final String WORKING_DIR = "working-dir";
     private static final String GINKGO_EXECUTABLE = "ginkgo-executable";
-    private static final String GINKGO_OPTIONS = "ginkgo-options";
+    private static final String GINKGO_ADDITIONAL_OPTIONS = "ginkgo-additional-options";
+    private static final String GINKGO_SCOPE = "ginkgo-scope";
+    private static final String FOCUS_EXPRESSION = "focus-expression";
+    private static final String TEST_NAMES = "test-names";
+    private static final String TEST_NAME = "test-name";
 
     private GinkgoSerializationUtil() {
     }
 
     public static void writeXml(Element element, GinkgoRunConfigurationOptions runSettings) {
         runSettings.getEnvData().writeExternal(element);
-        writeTestNames(element, runSettings.getTestNames());
-        writePath(element, WORKING_DIR, runSettings.getWorkingDir());
         writePath(element, GINKGO_EXECUTABLE, runSettings.getGinkgoExecutable());
-        writeNonEmptyField(element, GINKGO_OPTIONS, runSettings.getGinkgoOptions());
+        writePath(element, WORKING_DIR, runSettings.getWorkingDir());
+        runSettings.getEnvData().writeExternal(element);
+        writeNonEmptyField(element, GINKGO_ADDITIONAL_OPTIONS, runSettings.getGinkgoAdditionalOptions());
+        write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().getLabel());
+        write(element, FOCUS_EXPRESSION, runSettings.getFocusTestExpression());
+        writeTestNames(element, runSettings.getTestNames());
     }
 
     private static void write(Element element, String tagName, String value) {
@@ -55,19 +61,29 @@ public class GinkgoSerializationUtil {
     }
 
     public static GinkgoRunConfigurationOptions readXml(@NotNull Element element) {
+        GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions();
+        ginkgoRunConfigurationOptions.setGinkgoExecutable(read(element, GINKGO_EXECUTABLE));
+        ginkgoRunConfigurationOptions.setWorkingDir(read(element, WORKING_DIR));
+        ginkgoRunConfigurationOptions.setEnvData(EnvironmentVariablesData.readExternal(element));
+        ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(read(element, GINKGO_ADDITIONAL_OPTIONS));
+        ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element, GINKGO_SCOPE));
+        ginkgoRunConfigurationOptions.setFocusTestExpression(read(element, FOCUS_EXPRESSION));
+        ginkgoRunConfigurationOptions.setTestNames(readTestNames(element));
 
-        return new GinkgoRunConfigurationOptions.RunConfigBuilder()
-                .setEnvData(EnvironmentVariablesData.readExternal(element))
-                .setTestNames(readTestNames(element))
-                .setWorkingDir(read(element, WORKING_DIR))
-                .setGinkgoExecutable(read(element, GINKGO_EXECUTABLE))
-                .setGinkgoOptions(read(element, GINKGO_OPTIONS))
-                .build();
+        return ginkgoRunConfigurationOptions;
     }
 
     private static String read(Element element, String tagName) {
         String value = JDOMExternalizerUtil.readCustomField(element, tagName);
         return StringUtils.isEmpty(value) ? "" : value;
+    }
+
+    private static GinkgoScope readScope(Element element, String ginkgoScope) {
+        try {
+            return GinkgoScope.valueOf(read(element, GINKGO_SCOPE));
+        } catch (Exception e) {
+            return GinkgoScope.All;
+        }
     }
 
     private static List<String> readTestNames(Element element) {

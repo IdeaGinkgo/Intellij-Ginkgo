@@ -1,5 +1,6 @@
 package com.github.idea.ginkgo;
 
+import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.psi.GoCallExpr;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -32,13 +33,15 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
 
         String name = getSpecName(context);
         GinkgoRunConfigurationOptions options = configuration.getOptions();
-        GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions.RunConfigBuilder()
-                .setEnvData(options.getEnvData())
-                .setTestNames(Arrays.asList(GINKGO + ": " + name))
-                .setWorkingDir(context.getPsiLocation().getContainingFile().getContainingDirectory().getVirtualFile().getPath())
-                .setGinkgoExecutable(options.getGinkgoExecutable())
-                .setGinkgoOptions(String.format("--focus=%s", name))
-                .build();
+
+        GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions();
+        ginkgoRunConfigurationOptions.setGinkgoExecutable(options.getGinkgoExecutable());
+        ginkgoRunConfigurationOptions.setWorkingDir(context.getPsiLocation().getContainingFile().getContainingDirectory().getVirtualFile().getPath());
+        ginkgoRunConfigurationOptions.setEnvData(options.getEnvData());
+        ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
+        ginkgoRunConfigurationOptions.setTestNames(Arrays.asList(GINKGO + ": " + name));
+        ginkgoRunConfigurationOptions.setFocusTestExpression(name);
+
         configuration.setOptions(ginkgoRunConfigurationOptions);
         configuration.setGeneratedName();
         return true;

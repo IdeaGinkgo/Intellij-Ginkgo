@@ -1,5 +1,6 @@
 package com.github.idea.ginkgo;
 
+import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.GoEnvironmentUtil;
 import com.goide.GoOsManager;
 import com.goide.project.DefaultGoRootsProvider;
@@ -7,10 +8,8 @@ import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import jnr.ffi.Struct;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -18,46 +17,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOptions {
-    private final EnvironmentVariablesData envData;
-    private final List<String> testNames;
-    private final String workingDir;
-    private final String ginkgoExecutable;
-    private final String ginkgoOptions;
+    private String ginkgoExecutable;
+    private String workingDir;
+    private EnvironmentVariablesData envData;
+    private String ginkgoAdditionalOptions;
+    private GinkgoScope ginkgoScope;
+    private String focusTestExpression;
+    private List<String> testNames;
+
+    public GinkgoRunConfigurationOptions() {
+    }
 
     public GinkgoRunConfigurationOptions(Project project) {
-        envData = EnvironmentVariablesData.DEFAULT;
-        testNames = new ArrayList<>();
-        workingDir = project.getBasePath();
         ginkgoExecutable = findGinkgoExecutable(project);
-        ginkgoOptions = "";
-    }
-
-    public GinkgoRunConfigurationOptions(RunConfigBuilder builder) {
-        this.envData = builder.envData;
-        this.testNames = builder.testNames;
-        this.workingDir = builder.workingDir;
-        this.ginkgoExecutable = builder.ginkgoExecutable;
-        this.ginkgoOptions = builder.ginkgoOptions;
-    }
-
-    public EnvironmentVariablesData getEnvData() {
-        return envData;
-    }
-
-    public List<String> getTestNames() {
-        return testNames;
-    }
-
-    public String getWorkingDir() {
-        return workingDir;
+        workingDir = project.getBasePath();
+        envData = EnvironmentVariablesData.DEFAULT;
+        ginkgoAdditionalOptions = "";
+        ginkgoScope = GinkgoScope.All;
+        focusTestExpression = "";
+        testNames = new ArrayList<>();
     }
 
     public String getGinkgoExecutable() {
         return ginkgoExecutable;
     }
 
-    public String getGinkgoOptions() {
-        return ginkgoOptions;
+    public void setGinkgoExecutable(String ginkgoExecutable) {
+        this.ginkgoExecutable = ginkgoExecutable;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
+    }
+
+    public EnvironmentVariablesData getEnvData() {
+        return envData;
+    }
+
+    public void setEnvData(EnvironmentVariablesData envData) {
+        this.envData = envData;
+    }
+
+    public String getGinkgoAdditionalOptions() {
+        return ginkgoAdditionalOptions;
+    }
+
+    public void setGinkgoAdditionalOptions(String ginkgoAdditionalOptions) {
+        this.ginkgoAdditionalOptions = ginkgoAdditionalOptions;
+    }
+
+    public GinkgoScope getGinkgoScope() {
+        return ginkgoScope;
+    }
+
+    public void setGinkgoScope(GinkgoScope ginkgoScope) {
+        this.ginkgoScope = ginkgoScope;
+    }
+
+    public String getFocusTestExpression() {
+        return focusTestExpression;
+    }
+
+    public void setFocusTestExpression(String focusTestExpression) {
+        this.focusTestExpression = focusTestExpression;
+    }
+
+    public List<String> getTestNames() {
+        return testNames;
+    }
+
+    public void setTestNames(List<String> testNames) {
+        this.testNames = testNames;
     }
 
     @NotNull
@@ -94,42 +128,5 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         }
 
         return "";
-    }
-
-    public static class RunConfigBuilder {
-        private EnvironmentVariablesData envData;
-        private List<String> testNames;
-        private String workingDir;
-        private String ginkgoExecutable;
-        private String ginkgoOptions;
-
-        public RunConfigBuilder setEnvData(EnvironmentVariablesData envData) {
-            this.envData = envData;
-            return this;
-        }
-
-        public GinkgoRunConfigurationOptions build() {
-            return new GinkgoRunConfigurationOptions(this);
-        }
-
-        public RunConfigBuilder setTestNames(List<String> testNames) {
-            this.testNames = testNames;
-            return this;
-        }
-
-        public RunConfigBuilder setWorkingDir(String workingDir) {
-            this.workingDir = workingDir;
-            return this;
-        }
-
-        public RunConfigBuilder setGinkgoExecutable(String ginkgoExecutable) {
-            this.ginkgoExecutable = ginkgoExecutable;
-            return this;
-        }
-
-        public RunConfigBuilder setGinkgoOptions(String ginkgoOptions) {
-            this.ginkgoOptions = ginkgoOptions;
-            return this;
-        }
     }
 }

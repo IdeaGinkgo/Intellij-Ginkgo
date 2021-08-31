@@ -18,6 +18,9 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GinkgoRunProfileState implements RunProfileState {
     private final ExecutionEnvironment environment;
@@ -61,9 +64,24 @@ public class GinkgoRunProfileState implements RunProfileState {
     }
 
     private GeneralCommandLine createCommandLine(GinkgoRunConfigurationOptions runOptions) {
-        if (StringUtils.isEmpty(runOptions.getGinkgoOptions())) {
-            return new GeneralCommandLine(runOptions.getGinkgoExecutable(), "-r", "-v");
+        List<String> commandList = new ArrayList<>();
+        commandList.add(runOptions.getGinkgoExecutable());
+        commandList.add("-v");
+
+        if (StringUtils.isNotEmpty(runOptions.getGinkgoAdditionalOptions())) {
+            commandList.add(runOptions.getGinkgoAdditionalOptions());
         }
-        return new GeneralCommandLine(runOptions.getGinkgoExecutable(), "-v", runOptions.getGinkgoOptions());
+
+        switch (runOptions.getGinkgoScope()) {
+            case All:
+                commandList.add("-r");
+                break;
+            case FOCUS:
+                commandList.add(String.format("--focus=%s", runOptions.getFocusTestExpression()));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + runOptions.getGinkgoScope());
+        }
+        return new GeneralCommandLine(commandList.stream().toArray(String[]::new));
     }
 }
