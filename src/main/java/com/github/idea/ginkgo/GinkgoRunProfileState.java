@@ -8,6 +8,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessOutputTypes;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
@@ -57,7 +58,12 @@ public class GinkgoRunProfileState implements RunProfileState {
         GeneralCommandLine commandLine = createCommandLine(runOptions);
         commandLine.setWorkDirectory(runOptions.getWorkingDir());
 
-        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine);
+        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
+            public void startNotify() {
+                notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
+                super.startNotify();
+            }
+        };
         ProcessTerminatedListener.attach(processHandler);
 
         return processHandler;
