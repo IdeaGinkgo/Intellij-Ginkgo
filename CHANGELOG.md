@@ -5,6 +5,7 @@
 ## [Unreleased]
 ### Added 
 - Improved run dialog
+- Added test reporter functionality
 
 ## [0.0.2]
 ### Added
