@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Added 
+- Improved run dialog
+
+## [0.0.2]
 ### Added
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
 - `When` spec line marker
