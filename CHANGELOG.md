@@ -6,6 +6,7 @@
 ### Added 
 - Improved run dialog
 - Added test reporter functionality
+- Improved focus test selection
 
 ## [0.0.2]
 ### Added
