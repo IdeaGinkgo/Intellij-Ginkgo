@@ -63,7 +63,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
             return "All Test";
         }
 
-        return String.join("_", myOptions.getTestNames());
+        return String.join(" ", myOptions.getTestNames());
     }
 
     @Override

@@ -2,23 +2,19 @@ package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.psi.GoCallExpr;
-import com.intellij.execution.RunManager;
-import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.LazyRunConfigurationProducer;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer<GinkgoRunConfiguration> {
     public static final String GINKGO = "Ginkgo";
     private final ConfigurationFactory ginkgoConfigurationFactory;
+    private final List<String> SpecNodes = Arrays.asList("Describe", "Context", "When", "It", "Specify", "FDescribe", "FContext", "FWhen", "FIt", "FSpecify");
 
     public GinkgoRunConfigurationProducer() {
         super();
@@ -31,7 +27,8 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
             return false;
         }
 
-        String name = getSpecName(context);
+        List<String> specNames = getSpecNames(context);
+        Collections.reverse(specNames);
         GinkgoRunConfigurationOptions options = configuration.getOptions();
 
         GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions();
@@ -39,8 +36,8 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         ginkgoRunConfigurationOptions.setWorkingDir(context.getPsiLocation().getContainingFile().getContainingDirectory().getVirtualFile().getPath());
         ginkgoRunConfigurationOptions.setEnvData(options.getEnvData());
         ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
-        ginkgoRunConfigurationOptions.setTestNames(Arrays.asList(GINKGO + ": " + name));
-        ginkgoRunConfigurationOptions.setFocusTestExpression(name);
+        ginkgoRunConfigurationOptions.setTestNames(specNames);
+        ginkgoRunConfigurationOptions.setFocusTestExpression(String.join(" ", specNames));
 
         configuration.setOptions(ginkgoRunConfigurationOptions);
         configuration.setGeneratedName();
@@ -49,29 +46,28 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
 
     @Override
     public boolean isConfigurationFromContext(@NotNull GinkgoRunConfiguration configuration, @NotNull ConfigurationContext context) {
-        if (!(context.getPsiLocation().getParent().getParent() instanceof GoCallExpr)) {
+        if (!configuration.isGeneratedName()) {
             return false;
         }
-        return configuration.getName().equalsIgnoreCase(GINKGO + ": " + getSpecName(context));
+
+        GinkgoRunConfigurationOptions ginkgoOptions = configuration.getOptions();
+        List<String> specNames = getSpecNames(context);
+        Collections.reverse(specNames);
+        return specNames.equals(ginkgoOptions.getTestNames());
     }
 
-    @Nullable
-    @Override
-    public RunnerAndConfigurationSettings findExistingConfiguration(@NotNull ConfigurationContext context) {
-        final RunManager runManager = RunManager.getInstance(context.getProject());
-        final List<RunnerAndConfigurationSettings> configurations = runManager.getConfigurationSettingsList(GinkgoConfigurationType.class);
-        for (RunnerAndConfigurationSettings configurationSettings : configurations) {
-            if (isConfigurationFromContext((GinkgoRunConfiguration) configurationSettings.getConfiguration(), context)) {
-                return configurationSettings;
+    private List<String> getSpecNames(ConfigurationContext context) {
+        Stack<String> specTree = new Stack();
+        PsiElement location = context.getPsiLocation();
+        while (location.getParent() != null) {
+            location = location.getParent();
+            if (location.getParent() instanceof GoCallExpr) {
+                GoCallExpr parent = (GoCallExpr) location.getParent();
+                specTree.push(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
             }
         }
-        return null;
-    }
 
-    private String getSpecName(ConfigurationContext context) {
-        GoCallExpr e = (GoCallExpr) context.getPsiLocation().getParent().getParent();
-        String specName = e.getArgumentList().getExpressionList().get(0).getText();
-        return StringUtils.isEmpty(specName) ? GINKGO : specName.replace("\"", "");
+        return specTree.isEmpty() ? Arrays.asList(GINKGO) : new ArrayList(specTree);
     }
 
     @NotNull
