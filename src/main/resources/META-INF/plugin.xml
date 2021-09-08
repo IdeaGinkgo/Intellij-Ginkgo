@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.intellij.ginkgo</id>
     <vendor>IdeaGinkgo</vendor>
-    <name>IdeaGinkgo</name>
+    <name>Ginkgo</name>
     <version>0.0.1</version>
 
     <depends>com.intellij.modules.platform</depends>
