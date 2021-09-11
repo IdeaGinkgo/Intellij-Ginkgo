@@ -7,7 +7,7 @@
 
 <!-- Plugin description -->
 Adds [Ginkgo Test Framework](https://onsi.github.io/ginkgo/) integration for Intellij Ultimate and Goland.  
-This is still in beta but should be usable.  Help me make this betting submit any bugs you run into or features you would like to see.  
+This is still in beta but should be usable.  Help me make this better, submit any bugs you run into or features you would like to see.  
 
 ## Features:
 - Run specific test specs from the gutter.
