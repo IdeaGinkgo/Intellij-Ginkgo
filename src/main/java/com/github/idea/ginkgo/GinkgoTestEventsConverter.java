@@ -8,6 +8,8 @@ import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +20,8 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern FAIL = Pattern.compile("^(FAIL!)");
     private static final Pattern START_SUITE_BLOCK = Pattern.compile("Will run [0-9]* of [0-9]* specs");
     private static final Pattern END_SUITE_BLOCK = Pattern.compile("Ran [0-9]* of [0-9]* Specs in [0-9]*\\.?[0-9]* seconds");
+    private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
+    private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
     private static final String SPEC_SEPARATOR = "------------------------------";
     private Stack<String> suites = new Stack();
     private boolean inSuiteBlock;
@@ -25,6 +29,9 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private String specName;
     private String tempLine;
     private StringBuffer line = new StringBuffer();
+    private StringBuffer pendingTestOutputBuffer = new StringBuffer();
+    private List<String> pendingSpecNames = new ArrayList();
+    private boolean inPendingBlock;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
@@ -91,6 +98,15 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
             return line.length();
         }
 
+        if(START_PENDING_BLOCK.matcher(line).find(start)) {
+            inPendingBlock=true;
+            return line.length();
+        }
+
+        if(inPendingBlock && StringUtils.isNotBlank(line)) {
+            return processPendingSpecBlock(line, outputType, visitor);
+        }
+
         if (inSuiteBlock && StringUtils.isNotBlank(line)) {
             if (line.startsWith(SPEC_SEPARATOR)) {
                 processOutput(line, outputType, visitor);
@@ -129,6 +145,49 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
         processOutput(line, outputType, visitor);
         return line.length();
+    }
+
+
+    /**
+     * Processes pending spec output. Buffers the output so it can be grouped under the appropriate test name while
+     * building the spec name until a line seperator is reached.
+     *
+     * @param line
+     * @param outputType
+     * @param visitor
+     * @return
+     * @throws ParseException
+     */
+    private int processPendingSpecBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
+        if (line.startsWith(SPEC_SEPARATOR)) {
+            String specName = String.join(" ", pendingSpecNames);
+
+            startTest(specName, outputType, visitor);
+            processOutput(pendingTestOutputBuffer.toString(), outputType, visitor);
+            finishTest(specName, TestResult.SKIPPED, visitor);
+
+            //Complete pending suite block and reset state.
+            inPendingBlock = false;
+            pendingTestOutputBuffer.delete(0, pendingTestOutputBuffer.length());
+            pendingSpecNames.clear();
+            return line.length();
+        }
+
+        addPendingSpecName(line);
+        pendingTestOutputBuffer.append(line);
+        return line.length();
+    }
+
+
+    /**
+     * Add only spec names to pendingSpecList ignoring file location hint output.
+     *
+     * @param line
+     */
+    private void addPendingSpecName(String line) {
+        if (!FILE_LOCATION_OUTPUT.matcher(line).find()) {
+            pendingSpecNames.add(line.trim());
+        }
     }
 
     @Override

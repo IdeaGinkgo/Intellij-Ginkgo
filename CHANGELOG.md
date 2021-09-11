@@ -3,6 +3,9 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Added
+- Pending Test output processing
+
 ### Fixed
 - `When` focus expression
 - Ginkgo null icon exception
