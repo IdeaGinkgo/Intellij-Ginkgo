@@ -14,11 +14,6 @@ public final class GinkgoIcons implements Supplier<Icon> {
     private static Icon Ginkgo;
 
     @NotNull
-    public final Icon getGinkgo() {
-        return Ginkgo;
-    }
-
-    @NotNull
     private final Icon load(String path) {
         return IconLoader.getIcon(path, GinkgoIcons.class);
     }

@@ -27,7 +27,7 @@ public final class GinkgoFileType extends LanguageFileType implements FileType {
 
     @NotNull
     public Icon getIcon() {
-        return GinkgoIcons.INSTANCE.getGinkgo();
+        return GinkgoIcons.INSTANCE.get();
     }
 
     public GinkgoFileType() {

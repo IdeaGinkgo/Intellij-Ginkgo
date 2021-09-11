@@ -3,6 +3,11 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- `When` focus expression
+- Ginkgo null icon exception
+
+## [0.0.3]
 ### Added 
 - Improved run dialog
 - Added test reporter functionality
