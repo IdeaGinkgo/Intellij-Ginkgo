@@ -11,6 +11,7 @@
 ### Fixed
 - `When` focus expression
 - Ginkgo null icon exception
+- Linux test completion indicators
 
 ## [0.0.3]
 ### Added 
