@@ -1,5 +1,8 @@
 package com.github.idea.ginkgo;
 
+import com.goide.GoEnvironmentUtil;
+import com.goide.sdk.GoSdkService;
+import com.goide.sdk.GoSdkUtil;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -15,12 +18,21 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Couple;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.EnvironmentUtil;
+import com.intellij.util.containers.ContainerUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 public class GinkgoRunProfileState implements RunProfileState {
@@ -55,13 +67,19 @@ public class GinkgoRunProfileState implements RunProfileState {
     public ProcessHandler startProcess() throws ExecutionException {
         GinkgoRunConfigurationOptions runOptions = configuration.getOptions();
 
-        GeneralCommandLine commandLine = createCommandLine(runOptions);
-        commandLine
+        Couple<String> pathEntry = updatePath(EnvironmentUtil.getEnvironmentMap());
+        VirtualFile goRoot = GoSdkService.getInstance(project).getSdk(null).getSdkRoot();
+
+        GeneralCommandLine commandLine = createCommandLine(runOptions)
+                .withEnvironment(pathEntry.first, pathEntry.second)
+                .withEnvironment("GOROOT", goRoot.getPath())
                 .withEnvironment(runOptions.getEnvData().getEnvs())
-                .withWorkDirectory(runOptions.getWorkingDir());
+                .withWorkDirectory(runOptions.getWorkingDir())
+                .withCharset(StandardCharsets.UTF_8);
 
         KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
             public void startNotify() {
+                notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 super.startNotify();
             }
@@ -69,6 +87,23 @@ public class GinkgoRunProfileState implements RunProfileState {
         ProcessTerminatedListener.attach(processHandler);
 
         return processHandler;
+    }
+
+    /**
+     * Updates the the environment path with the go bin paths as determined by framework configuration.
+     *
+     * @param env
+     * @return Couple<String>
+     */
+    private Couple<String> updatePath(Map<String, String> env) {
+        Collection<String> paths = new ArrayList();
+        String goBinPaths = GoSdkUtil.retrieveEnvironmentPathForGo(project, null);
+        Couple<String> pathEntry = GoEnvironmentUtil.getPathEntry(env);
+
+        ContainerUtil.addIfNotNull(paths, StringUtil.nullize(goBinPaths, true));
+        ContainerUtil.addIfNotNull(paths, StringUtil.nullize(pathEntry.second, true));
+
+        return new Couple<>(pathEntry.first, StringUtil.join(paths, File.pathSeparator));
     }
 
     private GeneralCommandLine createCommandLine(GinkgoRunConfigurationOptions runOptions) {
