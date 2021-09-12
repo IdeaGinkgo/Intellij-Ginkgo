@@ -23,6 +23,10 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
     private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
     private static final String SPEC_SEPARATOR = "------------------------------";
+    public static final String SUCCESS_PREFIX_1 = "+";
+    public static final String FAILURE_PREFIX_1 = "+ Failure";
+    public static final String SUCCESS_PREFIX_2 = "•";
+    public static final String FAILURE_PREFIX_2 = "• Failure";
     private Stack<String> suites = new Stack();
     private boolean inSuiteBlock;
     private String specContext;
@@ -45,7 +49,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         }
 
         // immediately flush completed test indicator
-        if (text.equalsIgnoreCase("+")) {
+        if (text.equalsIgnoreCase(SUCCESS_PREFIX_1) || text.equalsIgnoreCase(SUCCESS_PREFIX_2)) {
             super.process(text, outputType);
             return;
         }
@@ -130,13 +134,13 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
                 return line.length();
             }
 
-            if (line.startsWith("+ Failure")) {
+            if (line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2) ) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.FAILED, visitor);
                 return line.length();
             }
 
-            if (line.startsWith("+")) {
+            if (line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.PASSED, visitor);
                 return line.length();
