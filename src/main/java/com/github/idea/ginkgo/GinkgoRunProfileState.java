@@ -56,7 +56,9 @@ public class GinkgoRunProfileState implements RunProfileState {
         GinkgoRunConfigurationOptions runOptions = configuration.getOptions();
 
         GeneralCommandLine commandLine = createCommandLine(runOptions);
-        commandLine.setWorkDirectory(runOptions.getWorkingDir());
+        commandLine
+                .withEnvironment(runOptions.getEnvData().getEnvs())
+                .withWorkDirectory(runOptions.getWorkingDir());
 
         KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
             public void startNotify() {
