@@ -5,6 +5,8 @@
 ## [Unreleased]
 ### Added
 - Pending Test output processing
+- Locate Ginkgo by intellij config
+- Console runs with intellij GoPath
 
 ### Fixed
 - `When` focus expression

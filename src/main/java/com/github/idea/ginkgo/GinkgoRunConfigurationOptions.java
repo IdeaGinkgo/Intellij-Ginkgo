@@ -3,7 +3,7 @@ package com.github.idea.ginkgo;
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.GoEnvironmentUtil;
 import com.goide.GoOsManager;
-import com.goide.project.DefaultGoRootsProvider;
+import com.goide.sdk.GoSdkUtil;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.execution.configurations.LocatableRunConfigurationOptions;
 import com.intellij.openapi.project.Project;
@@ -102,12 +102,12 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
 
     @NotNull
     public String findGinkgoInGoPath(Project project) {
-        return new DefaultGoRootsProvider().getGoPathBinRoots(project, null).stream()
-                .map(f -> GoOsManager.isWindows() ? f.findChild("ginkgo.exe") : f.findChild("ginkgo"))
-                .filter(f -> f != null)
-                .map(VirtualFile::getPath)
-                .findFirst()
-                .orElse("");
+        String ginkgoExecutableName = GoOsManager.isWindows() ? "ginkgo.exe" : "ginkgo";
+        VirtualFile foundFile = GoSdkUtil.findExecutableInGoPath(ginkgoExecutableName, project, null);
+        if (foundFile != null) {
+            return foundFile.getPath();
+        }
+        return "";
     }
 
     @NotNull
