@@ -17,4 +17,8 @@ public enum GinkgoFunctionType {
     GinkgoFunctionType(String specType) {
         this.specType = specType;
     }
+
+    public String specType() {
+        return specType;
+    }
 }
