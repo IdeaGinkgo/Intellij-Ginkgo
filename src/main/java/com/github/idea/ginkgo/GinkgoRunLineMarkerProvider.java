@@ -1,5 +1,6 @@
 package com.github.idea.ginkgo;
 
+import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.GoTypes;
 import com.goide.execution.testing.GoTestFinder;
 import com.goide.psi.GoCallExpr;
@@ -14,12 +15,9 @@ import com.intellij.util.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     private static final Function<PsiElement, String> TOOLTIP_PROVIDER = (element) -> "Ginkgo Test";
-    private final List<String> SpecNodes = Arrays.asList("Describe", "Context", "When", "It", "Specify", "FDescribe", "FContext", "FWhen", "FIt", "FSpecify");
 
     @Override
     @Nullable
@@ -31,7 +29,7 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
 
         if (e.getNode().getElementType() == GoTypes.IDENTIFIER && e.getParent().getParent() instanceof GoCallExpr) {
             GoCallExpr parent = (GoCallExpr) e.getParent().getParent();
-            if (SpecNodes.contains(parent.getExpression().getText())) {
+            if (GinkgoUtil.isGinkgoFunction(parent.getExpression().getText())) {
                 return new Info(AllIcons.RunConfigurations.TestState.Run, TOOLTIP_PROVIDER, ExecutorAction.getActions(0));
             }
         }

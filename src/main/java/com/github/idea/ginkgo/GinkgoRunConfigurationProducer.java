@@ -15,7 +15,6 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
     public static final String GINKGO = "Ginkgo";
     public static final String WHEN = "when";
     private final ConfigurationFactory ginkgoConfigurationFactory;
-    private final List<String> SpecNodes = Arrays.asList("Describe", "Context", "When", "It", "Specify", "FDescribe", "FContext", "FWhen", "FIt", "FSpecify");
 
     public GinkgoRunConfigurationProducer() {
         super();
