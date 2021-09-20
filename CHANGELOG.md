@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 ### Added
+- Pending spec markers with action to enable/disable
+
+## [0.1.0]
+### Added
 - Pending Test output processing
 - Locate Ginkgo by intellij config
 - Console runs with intellij GoPath
