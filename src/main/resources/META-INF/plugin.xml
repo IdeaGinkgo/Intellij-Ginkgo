@@ -19,4 +19,8 @@
                                   implementation="com.github.idea.ginkgo.GinkgoRunConfigurationProducer"
                                   order="after GoApplicationRunConfigurationProducer"/>
     </extensions>
+    <actions>
+        <action id="GinkgoEnableSpec" class="com.github.idea.ginkgo.actions.EnableSpec"/>
+        <action id="GinkgoDisableSpec" class="com.github.idea.ginkgo.actions.DisableSpec"/>
+    </actions>
 </idea-plugin>
