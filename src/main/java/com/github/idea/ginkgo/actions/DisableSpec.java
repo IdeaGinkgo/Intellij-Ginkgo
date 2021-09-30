@@ -6,6 +6,7 @@ import com.intellij.execution.Location;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +25,11 @@ public class DisableSpec extends AnAction {
         PsiElement psiElement = location.getPsiElement();
         GinkgoSpecType ginkgoSpec = getGinkgoSpecType(psiElement.getText());
         PsiElement newElement = GoElementFactory.createIdentifierFromText(e.getProject(), ginkgoSpec.getPendingSpecType().specType());
-        CommandProcessor cp = CommandProcessor.getInstance();
-        cp.runUndoTransparentAction(() -> psiElement.replace(newElement));
 
+        ApplicationManager.getApplication().runWriteAction(() ->
+            CommandProcessor.getInstance().runUndoTransparentAction(() ->
+                psiElement.replace(newElement))
+        );
     }
 
     @Override
