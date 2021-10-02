@@ -8,8 +8,6 @@ import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +19,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     @NotNull
     private GinkgoRunConfigurationOptions myOptions;
 
-    public GinkgoRunConfiguration(@NotNull Project project, @Nullable ConfigurationFactory factory, @Nullable String name) {
+    public GinkgoRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, @NotNull String name) {
         super(project, factory, name);
         myOptions = new GinkgoRunConfigurationOptions(project);
     }
@@ -67,14 +65,14 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     }
 
     @Override
-    public void writeExternal(@NotNull Element element) throws WriteExternalException {
+    public void writeExternal(@NotNull Element element) {
         super.writeExternal(element);
-        GinkgoSerializationUtil.INSTANCE.writeXml(element, myOptions);
+        GinkgoSerializationUtil.writeXml(element, myOptions);
     }
 
     @Override
-    public void readExternal(@NotNull Element element) throws InvalidDataException {
+    public void readExternal(@NotNull Element element) {
         super.readExternal(element);
-        myOptions = GinkgoSerializationUtil.INSTANCE.readXml(element);
+        myOptions = GinkgoSerializationUtil.readXml(element);
     }
 }

@@ -12,11 +12,12 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOptions {
+public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOptions implements Serializable {
     private String ginkgoExecutable;
     private String workingDir;
     private EnvironmentVariablesData envData;
@@ -33,7 +34,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         workingDir = project.getBasePath();
         envData = EnvironmentVariablesData.DEFAULT;
         ginkgoAdditionalOptions = "";
-        ginkgoScope = GinkgoScope.All;
+        ginkgoScope = GinkgoScope.ALL;
         focusTestExpression = "";
         testNames = new ArrayList<>();
     }
@@ -94,10 +95,40 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         this.testNames = testNames;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        GinkgoRunConfigurationOptions that = (GinkgoRunConfigurationOptions) o;
+
+        if (!getGinkgoExecutable().equals(that.getGinkgoExecutable())) return false;
+        if (!getWorkingDir().equals(that.getWorkingDir())) return false;
+        if (!getEnvData().equals(that.getEnvData())) return false;
+        if (!getGinkgoAdditionalOptions().equals(that.getGinkgoAdditionalOptions())) return false;
+        if (getGinkgoScope() != that.getGinkgoScope()) return false;
+        if (!getFocusTestExpression().equals(that.getFocusTestExpression())) return false;
+        return getTestNames().equals(that.getTestNames());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getGinkgoExecutable().hashCode();
+        result = 31 * result + getWorkingDir().hashCode();
+        result = 31 * result + getEnvData().hashCode();
+        result = 31 * result + getGinkgoAdditionalOptions().hashCode();
+        result = 31 * result + getGinkgoScope().hashCode();
+        result = 31 * result + getFocusTestExpression().hashCode();
+        result = 31 * result + getTestNames().hashCode();
+        return result;
+    }
+
     @NotNull
     private String findGinkgoExecutable(Project project) {
-        String ginkgoExecutable = findGinkgoInGoPath(project);
-        return StringUtils.isNotEmpty(ginkgoExecutable) ? ginkgoExecutable : findGinkgoByEnv();
+        String executable = findGinkgoInGoPath(project);
+        return StringUtils.isNotEmpty(executable) ? executable : findGinkgoByEnv();
     }
 
     @NotNull

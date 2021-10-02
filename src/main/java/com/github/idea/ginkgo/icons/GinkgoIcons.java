@@ -11,7 +11,7 @@ public final class GinkgoIcons implements Supplier<Icon> {
     public static final GinkgoIcons INSTANCE = new GinkgoIcons();
 
     @NotNull
-    private static Icon Ginkgo;
+    private Icon ginkgo;
 
     @NotNull
     private final Icon load(String path) {
@@ -20,9 +20,9 @@ public final class GinkgoIcons implements Supplier<Icon> {
 
     @Override
     public Icon get() {
-        if (Ginkgo == null) {
-            Ginkgo = this.load("/icons/ginkgo.png");
+        if (ginkgo == null) {
+            ginkgo = this.load("/icons/ginkgo.png");
         }
-        return Ginkgo;
+        return ginkgo;
     }
 }

@@ -13,18 +13,17 @@ public class GinkgoConfigurationType extends SimpleConfigurationType implements 
 
     @NotNull
     public static GinkgoConfigurationType getInstance() {
-        GinkgoConfigurationType instance = ConfigurationTypeUtil.findConfigurationType(GinkgoConfigurationType.class);
-        return instance;
+        return ConfigurationTypeUtil.findConfigurationType(GinkgoConfigurationType.class);
     }
 
     public GinkgoConfigurationType() {
-        super("GinkgoRunConfigurationType", "Ginkgo", "Ginkgo", NotNullLazyValue.lazy(GinkgoIcons.INSTANCE));
+        super("GinkgoRunConfigurationType", NAME, NAME, NotNullLazyValue.lazy(GinkgoIcons.INSTANCE));
     }
 
     @Override
     @NotNull
     public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-        return new GinkgoRunConfiguration(project, this, "ginkgo");
+        return new GinkgoRunConfiguration(project, this, NAME.toLowerCase());
     }
 
     @Override
