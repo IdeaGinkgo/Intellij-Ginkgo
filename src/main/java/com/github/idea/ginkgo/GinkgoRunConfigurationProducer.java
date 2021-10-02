@@ -57,7 +57,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
     }
 
     private List<String> getSpecNames(ConfigurationContext context) {
-        Stack<String> specTree = new Stack();
+        Deque<String> specTree = new ArrayDeque<>();
         PsiElement location = context.getPsiLocation();
         while (location.getParent() != null) {
             location = location.getParent();
@@ -72,7 +72,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
             }
         }
 
-        return specTree.isEmpty() ? Arrays.asList(GINKGO) : new ArrayList(specTree);
+        return specTree.isEmpty() ? Arrays.asList(GINKGO) : new ArrayList<>(specTree);
     }
 
     @NotNull

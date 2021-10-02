@@ -1,12 +1,13 @@
 package com.github.idea.ginkgo.scope;
 
+import com.github.idea.ginkgo.GinkgoPendingSpecType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 public enum GinkgoScope {
-    All("All Tests") {
+    ALL("All Tests") {
         @Override
         public GinkgoScopeView createView(Project project) {
             return new GinkgoAllTestsScopeView();
@@ -26,7 +27,11 @@ public enum GinkgoScope {
     }
 
     public static GinkgoScope valueOfLabel(String label) {
-        return Arrays.stream(values()).filter(l -> l.label == label).findFirst().get();
+        return Arrays
+                .stream(values())
+                .filter(l -> l.label.equals(label))
+                .findFirst()
+                .orElseThrow(() -> new EnumConstantNotPresentException(GinkgoPendingSpecType.class, label));
     }
 
     public String getLabel() {

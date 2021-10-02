@@ -53,13 +53,12 @@ public class GinkgoRunProfileState implements RunProfileState {
         return execute(executor, runner, startProcess());
     }
 
-    public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner, @NotNull ProcessHandler processHandler) throws ExecutionException {
+    public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner, @NotNull ProcessHandler processHandler) {
         GinkgoConsoleProperties consoleProperties = new GinkgoConsoleProperties(configuration, "Ginkgo", executor);
         SMTRunnerConsoleView consoleView = new SMTRunnerConsoleView(consoleProperties);
         SMTestRunnerConnectionUtil.initConsoleView(consoleView, "Ginkgo");
-        if (consoleView != null) {
-            consoleView.attachToProcess(processHandler);
-        }
+        consoleView.attachToProcess(processHandler);
+
         return new DefaultExecutionResult(consoleView, processHandler);
     }
 
@@ -78,6 +77,7 @@ public class GinkgoRunProfileState implements RunProfileState {
                 .withCharset(StandardCharsets.UTF_8);
 
         KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
+            @Override
             public void startNotify() {
                 notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
@@ -96,7 +96,7 @@ public class GinkgoRunProfileState implements RunProfileState {
      * @return Couple<String>
      */
     private Couple<String> updatePath(Map<String, String> env) {
-        Collection<String> paths = new ArrayList();
+        Collection<String> paths = new ArrayList<>();
         String goBinPaths = GoSdkUtil.retrieveEnvironmentPathForGo(project, null);
         Couple<String> pathEntry = GoEnvironmentUtil.getPathEntry(env);
 
@@ -116,7 +116,7 @@ public class GinkgoRunProfileState implements RunProfileState {
         }
 
         switch (runOptions.getGinkgoScope()) {
-            case All:
+            case ALL:
                 commandList.add("-r");
                 break;
             case FOCUS:

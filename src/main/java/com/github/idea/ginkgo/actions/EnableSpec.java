@@ -31,9 +31,4 @@ public class EnableSpec extends AnAction {
                     psiElement.replace(newElement))
         );
     }
-
-    @Override
-    public boolean isDumbAware() {
-        return super.isDumbAware();
-    }
 }

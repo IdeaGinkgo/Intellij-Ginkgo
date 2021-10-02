@@ -14,9 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.EnumMap;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfiguration> {
     private final Project project;
@@ -29,7 +28,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
     private JPanel scopeViewPanel = new JPanel(new BorderLayout());
 
     private ButtonGroup scopeButtonGroup = new ButtonGroup();
-    private Map<GinkgoScope, GinkgoScopeView> scopeViews = new HashMap<>();
+    private EnumMap<GinkgoScope, GinkgoScopeView> scopeViews = new EnumMap<>(GinkgoScope.class);
 
     //Magic number to align subform using the length of `Ginkgo additional options` label
     private int maxLabelWidth = 138;
@@ -107,7 +106,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
         Enumeration<AbstractButton> scopes = scopeButtonGroup.getElements();
         while (scopes.hasMoreElements()) {
             AbstractButton rb = scopes.nextElement();
-            if (rb.getText() == ginkgoScope.getLabel()) {
+            if (rb.getText().equalsIgnoreCase(ginkgoScope.getLabel())) {
                 rb.setSelected(true);
                 setTestScope(ginkgoScope);
             }
@@ -147,7 +146,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
                 return GinkgoScope.valueOfLabel(rb.getText());
             }
         }
-        return GinkgoScope.All;
+        return GinkgoScope.ALL;
     }
 
 

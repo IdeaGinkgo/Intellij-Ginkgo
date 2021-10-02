@@ -6,6 +6,11 @@ import com.github.idea.ginkgo.GinkgoSpecType;
 import java.util.Arrays;
 
 public class GinkgoUtil {
+
+    private GinkgoUtil() {
+        //Util class should not be instantiated.
+    }
+
     public static boolean isGinkgoFunction(String name) {
         return Arrays.stream(GinkgoSpecType.class.getEnumConstants()).anyMatch(e -> e.specType().equals(name));
     }

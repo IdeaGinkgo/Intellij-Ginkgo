@@ -1,7 +1,5 @@
 package com.github.idea.ginkgo;
 
-import com.github.idea.ginkgo.actions.DisableSpec;
-import com.github.idea.ginkgo.actions.EnableSpec;
 import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.GoIcons;
 import com.goide.GoTypes;
@@ -23,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
-    private static final Function<PsiElement, String> TOOLTIP_PROVIDER = (element) -> "Ginkgo Test";
+    private static final Function<PsiElement, String> TOOLTIP_PROVIDER = element -> "Ginkgo Test";
 
     @Override
     @Nullable

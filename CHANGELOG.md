@@ -6,6 +6,9 @@
 ### Added
 - Pending spec markers with action to enable/disable
 
+### Chore
+- General code quality
+
 ## [0.1.0]
 ### Added
 - Pending Test output processing

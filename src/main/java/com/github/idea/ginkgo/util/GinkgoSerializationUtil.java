@@ -52,7 +52,7 @@ public class GinkgoSerializationUtil {
         }
     }
 
-    private static void writeTestNames(@NotNull Element element, @NotNull List testNames) {
+    private static void writeTestNames(@NotNull Element element, @NotNull List<String> testNames) {
         if (!testNames.isEmpty()) {
             Element testNamesElement = new Element(TEST_NAMES);
             JDOMExternalizerUtil.addChildrenWithValueAttribute(testNamesElement, TEST_NAME, testNames);
@@ -66,7 +66,7 @@ public class GinkgoSerializationUtil {
         ginkgoRunConfigurationOptions.setWorkingDir(read(element, WORKING_DIR));
         ginkgoRunConfigurationOptions.setEnvData(EnvironmentVariablesData.readExternal(element));
         ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(read(element, GINKGO_ADDITIONAL_OPTIONS));
-        ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element, GINKGO_SCOPE));
+        ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element));
         ginkgoRunConfigurationOptions.setFocusTestExpression(read(element, FOCUS_EXPRESSION));
         ginkgoRunConfigurationOptions.setTestNames(readTestNames(element));
 
@@ -78,19 +78,18 @@ public class GinkgoSerializationUtil {
         return StringUtils.isEmpty(value) ? "" : value;
     }
 
-    private static GinkgoScope readScope(Element element, String ginkgoScope) {
+    private static GinkgoScope readScope(Element element) {
         try {
             return GinkgoScope.valueOf(read(element, GINKGO_SCOPE));
         } catch (Exception e) {
-            return GinkgoScope.All;
+            return GinkgoScope.ALL;
         }
     }
 
     private static List<String> readTestNames(Element element) {
         Element testNamesElement = element.getChild(TEST_NAMES);
         if (testNamesElement != null) {
-            List<String> testNames = JDOMExternalizerUtil.getChildrenValueAttributes(testNamesElement, TEST_NAME);
-            return testNames;
+            return JDOMExternalizerUtil.getChildrenValueAttributes(testNamesElement, TEST_NAME);
         } else {
             return new ArrayList<>();
         }

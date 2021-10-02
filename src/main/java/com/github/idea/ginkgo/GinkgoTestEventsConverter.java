@@ -27,14 +27,14 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     public static final String FAILURE_PREFIX_1 = "+ Failure";
     public static final String SUCCESS_PREFIX_2 = "•";
     public static final String FAILURE_PREFIX_2 = "• Failure";
-    private Stack<String> suites = new Stack();
+    private Stack<String> suites = new Stack<>();
     private boolean inSuiteBlock;
     private String specContext;
     private String specName;
     private String tempLine;
-    private StringBuffer line = new StringBuffer();
-    private StringBuffer pendingTestOutputBuffer = new StringBuffer();
-    private List<String> pendingSpecNames = new ArrayList();
+    private StringBuilder line = new StringBuilder();
+    private StringBuilder pendingTestOutputBuffer = new StringBuilder();
+    private List<String> pendingSpecNames = new ArrayList<>();
     private boolean inPendingBlock;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
@@ -164,11 +164,11 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
      */
     private int processPendingSpecBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
         if (line.startsWith(SPEC_SEPARATOR)) {
-            String specName = String.join(" ", pendingSpecNames);
+            String pendingSpecName = String.join(" ", pendingSpecNames);
 
-            startTest(specName, outputType, visitor);
+            startTest(pendingSpecName, outputType, visitor);
             processOutput(pendingTestOutputBuffer.toString(), outputType, visitor);
-            finishTest(specName, TestResult.SKIPPED, visitor);
+            finishTest(pendingSpecName, TestResult.SKIPPED, visitor);
 
             //Complete pending suite block and reset state.
             inPendingBlock = false;
@@ -192,10 +192,5 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         if (!FILE_LOCATION_OUTPUT.matcher(line).find()) {
             pendingSpecNames.add(line.trim());
         }
-    }
-
-    @Override
-    protected void processOutput(@NotNull String text, Key<?> outputType, ServiceMessageVisitor visitor) throws ParseException {
-        super.processOutput(text, outputType, visitor);
     }
 }
