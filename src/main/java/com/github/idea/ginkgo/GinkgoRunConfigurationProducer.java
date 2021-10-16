@@ -28,7 +28,6 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         }
 
         List<String> specNames = getSpecNames(context);
-        Collections.reverse(specNames);
         GinkgoRunConfigurationOptions options = configuration.getOptions();
 
         GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions();
@@ -52,7 +51,6 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
 
         GinkgoRunConfigurationOptions ginkgoOptions = configuration.getOptions();
         List<String> specNames = getSpecNames(context);
-        Collections.reverse(specNames);
         return specNames.equals(ginkgoOptions.getTestNames());
     }
 
