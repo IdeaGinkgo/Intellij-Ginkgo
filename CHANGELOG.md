@@ -5,6 +5,8 @@
 ## [Unreleased]
 ### Added
 - Pending spec markers with action to enable/disable
+### Fixed
+- IndexOutOfBoundsException when getting spec name
 
 ### Chore
 - General code quality
