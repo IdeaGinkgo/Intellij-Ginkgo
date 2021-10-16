@@ -1,7 +1,5 @@
 package com.github.idea.ginkgo;
 
-import com.github.idea.ginkgo.actions.DisableSpec;
-import com.github.idea.ginkgo.actions.EnableSpec;
 import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.GoIcons;
 import com.goide.GoTypes;
@@ -35,7 +33,7 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
 
         if (e.getNode().getElementType() == GoTypes.IDENTIFIER && e.getParent().getParent() instanceof GoCallExpr) {
             GoCallExpr parent = (GoCallExpr) e.getParent().getParent();
-            if (GinkgoUtil.isGinkgoFunction(parent.getExpression().getText())) {
+            if (GinkgoUtil.isGinkgoFunction(parent.getExpression().getText()) && parent.getArgumentList().getExpressionList().size() == 2) {
                 AnAction[] runActions = ExecutorAction.getActions(0);
                 runActions = ArrayUtil.append(runActions, ActionManager.getInstance().getAction("GinkgoDisableSpec"));
                 return new Info(AllIcons.RunConfigurations.TestState.Run, TOOLTIP_PROVIDER, runActions);
