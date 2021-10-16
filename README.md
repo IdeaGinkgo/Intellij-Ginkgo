@@ -9,12 +9,25 @@
 Adds [Ginkgo Test Framework](https://onsi.github.io/ginkgo/) integration for Intellij Ultimate and Goland.  
 This is still in beta but should be usable.  Help me make this better, submit any bugs you run into or features you would like to see.  
 
+## Requirements:
+Unfortunately because it relies on the go plugin it is only compatible with IntelliJ IDEA Ultimate and Goland.
+
+Also relies on the Ginkgo CLI as a test executor.  
+You can install the executor with either:
+```bash
+go get github.com/onsi/ginkgo/ginkgo
+```
+or
+```bash
+go install github.com/onsi/ginkgo/ginkgo
+```
+depending on your go version.  Please refer to the ginkgo documentation for additional information.
+
 ## Features:
 - Run specific test specs from the gutter.
 - Ginkgo test run configuration.
 - View tests results.
 
-Unfortunately because it relies on the go plugin it is only compatible with IntelliJ IDEA Ultimate and Goland.
 <!-- Plugin description end -->
 
 ## ScreenShots
@@ -31,7 +44,10 @@ I am looking for help in general, but some specific topics include:
 
 
 ## Installation
-
+- Using IDE built-in plugin system:
+  - Installing plugin: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Ginkgo"</kbd> >
+    <kbd>Install Plugin</kbd>
+    
 - Using IDE built-in plugin beta channel system:  
   - Adding the beta channel: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Manage Plugin Repositories...</kbd> add link `https://plugins.jetbrains.com/plugins/beta/list`
   - Installing plugin: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Ginkgo"</kbd> >
