@@ -5,6 +5,8 @@
 ## [Unreleased]
 ### Added
 - Pending spec markers with action to enable/disable
+- Updated compatability version to included 213
+
 ### Fixed
 - IndexOutOfBoundsException when getting spec name
 
