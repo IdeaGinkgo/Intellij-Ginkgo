@@ -3,6 +3,7 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+## [0.2.0]
 ### Added
 - Pending spec markers with action to enable/disable
 - Updated compatability version to included 213
