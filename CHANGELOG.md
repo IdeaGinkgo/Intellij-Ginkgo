@@ -3,6 +3,9 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Run configuration from project settings not being respected
+
 ## [0.2.0]
 ### Added
 - Pending spec markers with action to enable/disable
