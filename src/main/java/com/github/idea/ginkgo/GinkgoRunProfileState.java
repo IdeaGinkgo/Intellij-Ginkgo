@@ -1,6 +1,7 @@
 package com.github.idea.ginkgo;
 
 import com.goide.GoEnvironmentUtil;
+import com.goide.execution.extension.GoExecutorExtension;
 import com.goide.sdk.GoSdkService;
 import com.goide.sdk.GoSdkUtil;
 import com.intellij.execution.DefaultExecutionResult;
@@ -29,10 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class GinkgoRunProfileState implements RunProfileState {
@@ -68,11 +66,13 @@ public class GinkgoRunProfileState implements RunProfileState {
 
         Couple<String> pathEntry = updatePath(EnvironmentUtil.getEnvironmentMap());
         VirtualFile goRoot = GoSdkService.getInstance(project).getSdk(null).getSdkRoot();
+        Map<String, String> environmentFromExtensions = getProjectEnvironmentExtensions();
 
         GeneralCommandLine commandLine = createCommandLine(runOptions)
                 .withEnvironment(pathEntry.first, pathEntry.second)
                 .withEnvironment("GOROOT", goRoot.getPath())
                 .withEnvironment(runOptions.getEnvData().getEnvs())
+                .withEnvironment(environmentFromExtensions)
                 .withWorkDirectory(runOptions.getWorkingDir())
                 .withCharset(StandardCharsets.UTF_8);
 
@@ -90,7 +90,25 @@ public class GinkgoRunProfileState implements RunProfileState {
     }
 
     /**
-     * Updates the the environment path with the go bin paths as determined by framework configuration.
+     * Uses the Goland executor extension to get Go module environment variables from the project settings setup
+     * under Go -> Modules -> Environment
+     *
+     * @return Map<String, String> of Environmental entries from project configuration
+     */
+    @NotNull
+    private Map<String, String> getProjectEnvironmentExtensions() {
+        Map<String, String> environmentFromExtensions = new HashMap();
+        Iterator goExtensionIterator = GoExecutorExtension.EP_NAME.getExtensionList().iterator();
+
+        while (goExtensionIterator.hasNext()) {
+            GoExecutorExtension extension = (GoExecutorExtension) goExtensionIterator.next();
+            environmentFromExtensions.putAll(extension.getExtraEnvironment(project, null, environmentFromExtensions));
+        }
+        return environmentFromExtensions;
+    }
+
+    /**
+     * Updates the environment path with the go bin paths as determined by framework configuration.
      *
      * @param env
      * @return Couple<String>
