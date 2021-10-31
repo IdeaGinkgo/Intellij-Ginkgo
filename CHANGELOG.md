@@ -3,6 +3,7 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+## [0.2.1]
 ### Fixed
 - Run configuration from project settings not being respected
 
