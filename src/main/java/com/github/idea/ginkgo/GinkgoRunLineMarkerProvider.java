@@ -33,13 +33,22 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
 
         if (e.getNode().getElementType() == GoTypes.IDENTIFIER && e.getParent().getParent() instanceof GoCallExpr) {
             GoCallExpr parent = (GoCallExpr) e.getParent().getParent();
-            if (GinkgoUtil.isGinkgoFunction(parent.getExpression().getText()) && parent.getArgumentList().getExpressionList().size() == 2) {
+
+            //Marks RunSpec with runnable
+            if (GinkgoUtil.isGinkgoSuite(parent) && parent.getArgumentList().getExpressionList().size() == 2) {
+                AnAction[] runActions = ExecutorAction.getActions(0);
+                return new Info(AllIcons.RunConfigurations.TestState.Run, TOOLTIP_PROVIDER, runActions);
+            }
+
+            //Marks ginkgo functions with runnable/disable
+            if (GinkgoUtil.isGinkgoFunction(parent) && parent.getArgumentList().getExpressionList().size() == 2) {
                 AnAction[] runActions = ExecutorAction.getActions(0);
                 runActions = ArrayUtil.append(runActions, ActionManager.getInstance().getAction("GinkgoDisableSpec"));
                 return new Info(AllIcons.RunConfigurations.TestState.Run, TOOLTIP_PROVIDER, runActions);
             }
 
-            if (GinkgoUtil.isGinkgoPendingFunction(parent.getExpression().getText())) {
+            //Marks pending functions with enable
+            if (GinkgoUtil.isGinkgoPendingFunction(parent)) {
                 return new Info(GoIcons.Helper.createIconWithShift(AllIcons.RunConfigurations.TestIgnored, AllIcons.Nodes.RunnableMark), TOOLTIP_PROVIDER, ActionManager.getInstance().getAction("GinkgoEnableSpec"));
             }
         }

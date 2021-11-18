@@ -2,7 +2,11 @@
 
 # Intellij-ginkgo Changelog
 
-## [Unreleased]
+## [0.3.0]
+### Added
+- Run markers for Suites
+- Run option in project view pop-up menu
+
 ## [0.2.1]
 ### Fixed
 - Run configuration from project settings not being respected
