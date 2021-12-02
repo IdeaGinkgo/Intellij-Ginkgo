@@ -2,7 +2,7 @@
 
 # Intellij-ginkgo Changelog
 
-## [0.3.0-beta]
+## [Unreleased]
 ### Added
 - Table Extension Support
 
