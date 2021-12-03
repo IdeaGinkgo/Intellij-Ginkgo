@@ -19,6 +19,14 @@ public class GinkgoUtil {
         return Arrays.stream(GinkgoPendingSpecType.class.getEnumConstants()).anyMatch(e -> e.specType().equals(name));
     }
 
+    public static boolean isTableEntity(String name) {
+        return Arrays.asList(GinkgoSpecType.ENTRY, GinkgoSpecType.FENTRY).stream().anyMatch(e -> e.specType().equals(name));
+    }
+
+    public static boolean isTablePendingEntity(String name) {
+        return Arrays.asList(GinkgoPendingSpecType.PENTRY, GinkgoPendingSpecType.XENTRY).stream().anyMatch(e -> e.specType().equals(name));
+    }
+
     public static GinkgoPendingSpecType getGinkgoPendingSpecType(String name) {
         return Arrays.stream(GinkgoPendingSpecType.class.getEnumConstants())
                 .filter(e -> e.specType().equals(name))
