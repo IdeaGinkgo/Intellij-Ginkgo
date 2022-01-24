@@ -5,6 +5,7 @@
 ## [0.3.0-beta]
 ### Added
 - Table Extension Support
+- Handle before block output
 
 ## [0.2.1]
 ### Fixed
