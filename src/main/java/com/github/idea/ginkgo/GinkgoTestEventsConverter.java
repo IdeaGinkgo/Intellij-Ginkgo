@@ -21,6 +21,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern START_SUITE_BLOCK = Pattern.compile("Will run [0-9]* of [0-9]* specs");
     private static final Pattern END_SUITE_BLOCK = Pattern.compile("Ran [0-9]* of [0-9]* Specs in [0-9]*\\.?[0-9]* seconds");
     private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
+    private static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
     private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
     private static final String SPEC_SEPARATOR = "------------------------------";
     public static final String SUCCESS_PREFIX_1 = "+";
@@ -36,6 +37,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private StringBuilder pendingTestOutputBuffer = new StringBuilder();
     private List<String> pendingSpecNames = new ArrayList<>();
     private boolean inPendingBlock;
+    private boolean inBeforeSuite;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
@@ -68,11 +70,20 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         Matcher matcher;
 
         if ((matcher = SUITE_START.matcher(line)).find(start)) {
-            String suiteName = matcher.group(1);
+            String suiteName = cleanSuiteName(matcher.group(1));
             suites.push(suiteName);
             startTest(suiteName, outputType, visitor);
             processOutput(line, outputType, visitor);
             return line.length();
+        }
+
+        if(START_BEFORE_SUITE_BLOCK.matcher(line).find(start)) {
+            inBeforeSuite=true;
+            return line.length();
+        }
+
+        if(inBeforeSuite && StringUtils.isNotBlank(line)) {
+            return processBeforeSuiteBlock(line, outputType, visitor);
         }
 
         if (SUCCESS.matcher(line).find(start)) {
@@ -151,10 +162,28 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         return line.length();
     }
 
+    private int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
+        if (line.startsWith(SPEC_SEPARATOR)) {
+            inBeforeSuite = false;
+            return line.length();
+        }
+
+        return line.length();
+    }
+
+    private String cleanSuiteName(String group) {
+        int locationDataStart = group.lastIndexOf("-");
+        if (locationDataStart == -1) {
+            return group;
+        }
+
+        return group.substring(0, locationDataStart).trim();
+    }
+
 
     /**
      * Processes pending spec output. Buffers the output so it can be grouped under the appropriate test name while
-     * building the spec name until a line seperator is reached.
+     * building the spec name until a line separator is reached.
      *
      * @param line
      * @param outputType
