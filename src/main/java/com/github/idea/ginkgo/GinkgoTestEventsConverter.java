@@ -4,6 +4,7 @@ import com.goide.execution.testing.frameworks.gotest.GotestEventsConverter;
 import com.intellij.execution.testframework.TestConsoleProperties;
 import com.intellij.openapi.util.Key;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
+import jetbrains.buildServer.messages.serviceMessages.TestStdErr;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private List<String> pendingSpecNames = new ArrayList<>();
     private boolean inPendingBlock;
     private boolean inBeforeSuite;
+    private boolean ginkgoCLIException;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
@@ -68,6 +70,21 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     @Override
     protected int processLine(@NotNull String line, int start, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
         Matcher matcher;
+        if (line.startsWith("flag provided but not defined:") || line.startsWith("=== RUN")) {
+            startTest("Ginkgo CLI Incompatible", outputType, visitor);
+            visitor.visitTestStdErr(new TestStdErr("Ginkgo CLI Incompatible",
+                    "An error occurred with ginkgo CLI this usually is a V1/V2 compatibility issue. \n" +
+                                "Please make sure the ginkgo CLI version matches the version used by your project. \n" +
+                                "You can install the appropriate CLI by running 'go install github.com/onsi/ginkgo/ginkgo@v1' or " +
+                                "'go install github.com/onsi/ginkgo/v2/ginkgo@v2' \n"));
+            finishTest("Ginkgo CLI Incompatible", TestResult.FAILED, visitor);
+            ginkgoCLIException = true;
+            return line.length();
+        }
+
+        if (ginkgoCLIException) {
+            return line.length();
+        }
 
         if ((matcher = SUITE_START.matcher(line)).find(start)) {
             String suiteName = cleanSuiteName(matcher.group(1));

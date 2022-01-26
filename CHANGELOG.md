@@ -6,6 +6,7 @@
 ### Added
 - Table Extension Support
 - Handle before block output
+- Add Warning for Incompatible Ginkgo Version
 
 ## [0.2.1]
 ### Fixed
