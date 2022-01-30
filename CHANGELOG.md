@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 ### Added
+- EAP support
+### Chore
+- Update build plugin to 1.3.1
+
+## [0.3.0]
+### Added
 - Table Extension Support
 - Handle before block output
 - Add Warning for Incompatible Ginkgo Version
