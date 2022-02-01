@@ -9,6 +9,10 @@
 
 ## [0.3.0]
 ### Added
+- Debug
+
+## [0.3.0]
+### Added
 - Table Extension Support
 - Handle before block output
 - Add Warning for Incompatible Ginkgo Version

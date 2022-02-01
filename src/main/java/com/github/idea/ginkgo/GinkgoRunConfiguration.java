@@ -1,5 +1,6 @@
 package com.github.idea.ginkgo;
 
+import com.github.idea.ginkgo.execution.testing.GinkgoRunningState;
 import com.github.idea.ginkgo.util.GinkgoSerializationUtil;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -52,7 +53,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
-        return new GinkgoRunProfileState(environment, getProject(), executor, this);
+        return new GinkgoRunningState(environment, getProject(), this);
     }
 
     @Override
