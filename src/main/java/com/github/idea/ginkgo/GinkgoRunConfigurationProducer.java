@@ -2,6 +2,7 @@ package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.psi.GoCallExpr;
+import com.goide.psi.GoFile;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.LazyRunConfigurationProducer;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -37,6 +38,10 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
         ginkgoRunConfigurationOptions.setTestNames(specNames);
         ginkgoRunConfigurationOptions.setFocusTestExpression(String.join(" ", specNames));
+
+        GoFile file = (GoFile) context.getPsiLocation().getContainingFile();
+        ginkgoRunConfigurationOptions.setPackageName(file.getPackageName());
+        ginkgoRunConfigurationOptions.setCanonicalPackageName(file.getImportPath(false));
 
         configuration.setOptions(ginkgoRunConfigurationOptions);
         configuration.setGeneratedName();

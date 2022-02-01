@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GinkgoConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
 
-    GinkgoConsoleProperties(@NotNull GinkgoRunConfiguration configuration, @NotNull String testFrameworkName, @NotNull Executor executor) {
+    public GinkgoConsoleProperties(@NotNull GinkgoRunConfiguration configuration, @NotNull String testFrameworkName, @NotNull Executor executor) {
         super(configuration, testFrameworkName, executor);
         this.setPrintTestingStartedTime(false);
     }
