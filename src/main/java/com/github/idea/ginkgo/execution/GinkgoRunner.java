@@ -50,26 +50,26 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
 
     @NotNull
     @Override
-    //See GoBuildingRunningState.java:execute
     protected Promise<RunContentDescriptor> execute(@NotNull ExecutionEnvironment environment, @NotNull RunProfileState state) throws ExecutionException {
-        //Default executor
-        if (!(state instanceof GinkgoRunningState)) {
+        // Default executor
+        if (!(state instanceof GinkgoRunningState) && !(state instanceof GinkgoBuildRunningState)) {
             ExecutionResult result = state.execute(environment.getExecutor(), this);
             return Promises.resolvedPromise(result != null ? environment.getContentToReuse() : null);
         }
 
+
         GinkgoRunningState ginkgoRunningState = (GinkgoRunningState) state;
 
-        //Ginkgo Debug
+        // Ginkgo Debug
         final AsyncPromise<RunContentDescriptor> buildingPromise = new AsyncPromise();
         if (ginkgoRunningState.isDebug()) {
             // Start Build Phase
             // In order to attach the debugger we must precompile the test binaries
-            GinkgoBuildRunningState buildingState = new GinkgoBuildRunningState(environment, ginkgoRunningState.getProject(), ginkgoRunningState.getConfiguration());
+            GinkgoBuildRunningState buildingState = new GinkgoBuildRunningState(environment, ginkgoRunningState.getProject(), ginkgoRunningState.getConfiguration(), buildingPromise);
             Task.Backgroundable task = new Task.Backgroundable(environment.getProject(), "Ginkgo Test") {
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
-                        execute(environment, buildingState).processed(buildingPromise);
+                        buildingState.execute(environment.getExecutor(), GinkgoRunner.this);
                     } catch (ProcessCanceledException processCanceledException) {
                         throw processCanceledException;
                     } catch (Throwable throwable) {
@@ -81,7 +81,9 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
                     buildingPromise.setError(GoBundle.message("go.execution.process.cancelled", new Object[0]));
                 }
             };
-            this.runOnEdt(() -> {
+
+            // Run the build task in the background
+            runOnEdt(() -> {
                 ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
             }, ModalityState.defaultModalityState());
             // End Build Phase
@@ -89,12 +91,7 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
             // Start Debug Phase
             // After the test binaries have been compiled we run the test file with and attach the debugger
             AsyncPromise<RunContentDescriptor> result = new AsyncPromise();
-            buildingPromise.then(f -> {
-                try {
-                    Thread.sleep(2000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            buildingPromise.onSuccess(it -> {
                 ginkgoRunningState.getDebugServerAddress();
                 ginkgoRunningState.setOutputFile(buildingState.getOutputFile());
                 ginkgoRunningState.getDebugClientAddress().thenAsync((address) -> {
@@ -116,14 +113,13 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
                 }).onError((t) -> {
                     result.setError(new ExecutionException(GoBundle.message("go.execution.could.not.bind.remote.debugging.port.error", new Object[0]), t));
                 });
-                return null;
-            });
+            }).onError((t) -> result.setError(t));
             // End Debug Phase
 
             return result;
         }
 
-        //Ginkgo Execute
+        // Ginkgo Execute
         ExecutionResult result = state.execute(environment.getExecutor(), this);
         RunContentDescriptor contentToReuse = environment.getContentToReuse();
         return Promises.resolvedPromise(result != null ? (new RunContentBuilder(result, environment)).showRunContent(contentToReuse) : null);
