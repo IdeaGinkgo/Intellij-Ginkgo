@@ -13,7 +13,7 @@ import java.util.*;
 
 public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer<GinkgoRunConfiguration> {
     public static final String GINKGO = "Ginkgo";
-    public static final String WHEN = "when";
+    public static final String WHEN = "(when )?";
     private final ConfigurationFactory ginkgoConfigurationFactory;
 
     public GinkgoRunConfigurationProducer() {
@@ -61,12 +61,15 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
             location = location.getParent();
             if (location.getParent() instanceof GoCallExpr) {
                 GoCallExpr parent = (GoCallExpr) location.getParent();
-                specTree.push(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
+                StringBuilder nodeNameBuilder = new StringBuilder();
 
                 //Special case append when for When blocks
-                if (parent.getExpression().getText().equalsIgnoreCase(WHEN)) {
-                    specTree.push(WHEN);
+                if (parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
+                    nodeNameBuilder.append(WHEN);
                 }
+
+                nodeNameBuilder.append(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
+                specTree.push(nodeNameBuilder.toString());
             }
         }
 

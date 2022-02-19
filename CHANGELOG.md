@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- `When` nodes now generated a focus regex for V1/V2 Compatability
+
+## [0.3.0]
 ### Added
 - Table Extension Support
 - Handle before block output
