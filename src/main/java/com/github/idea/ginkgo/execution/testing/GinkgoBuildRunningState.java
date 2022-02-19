@@ -15,12 +15,10 @@ import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.process.KillableColoredProcessHandler;
-import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessOutputTypes;
-import com.intellij.execution.process.ProcessTerminatedListener;
+import com.intellij.execution.process.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
+import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Couple;
 import com.intellij.openapi.util.io.FileUtil;
@@ -30,6 +28,7 @@ import com.intellij.util.EnvironmentUtil;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.concurrency.AsyncPromise;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,14 +39,16 @@ public class GinkgoBuildRunningState implements RunProfileState {
     private final ExecutionEnvironment environment;
     private final Project project;
     private final GinkgoRunConfiguration configuration;
+    private final AsyncPromise<RunContentDescriptor> buildingPromise;
     private VirtualFile sdkRoot;
     private File outputFile;
 
 
-    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration) {
+    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration, AsyncPromise<RunContentDescriptor> buildingPromise) {
         this.environment = env;
         this.project = project;
         this.configuration = configuration;
+        this.buildingPromise = buildingPromise;
         this.sdkRoot = GoSdkService.getInstance(project).getSdk(null).getSdkRoot();
     }
 
@@ -81,7 +82,17 @@ public class GinkgoBuildRunningState implements RunProfileState {
             }
         };
         ProcessTerminatedListener.attach(processHandler);
-
+        processHandler.addProcessListener(new ProcessAdapter() {
+            @Override
+            public void processTerminated(@NotNull ProcessEvent event) {
+                if (event.getExitCode() != 0) {
+                    buildingPromise.setError(new ExecutionException(GoBundle.message("go.execution.compilation.failed.notification.title", new Object[0])));
+                }
+                System.out.println("process terminated");
+                buildingPromise.setResult(environment.getContentToReuse());
+            }
+        });
+        processHandler.startNotify();
         return processHandler;
     }
 

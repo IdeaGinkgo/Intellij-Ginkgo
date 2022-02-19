@@ -9,7 +9,7 @@
 
 ## [0.3.0]
 ### Added
-- Debug
+- Debug capabilities
 
 ## [0.3.0]
 ### Added
