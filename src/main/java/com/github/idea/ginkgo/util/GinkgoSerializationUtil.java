@@ -23,6 +23,7 @@ public class GinkgoSerializationUtil {
     private static final String FOCUS_EXPRESSION = "focus-expression";
     private static final String TEST_NAMES = "test-names";
     private static final String TEST_NAME = "test-name";
+    private static final String PACKAGE_NAME = "package-name";
 
     private GinkgoSerializationUtil() {
     }
@@ -35,6 +36,7 @@ public class GinkgoSerializationUtil {
         writeNonEmptyField(element, GINKGO_ADDITIONAL_OPTIONS, runSettings.getGinkgoAdditionalOptions());
         write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().getLabel());
         write(element, FOCUS_EXPRESSION, runSettings.getFocusTestExpression());
+        write(element, PACKAGE_NAME, runSettings.getPackageName());
         writeTestNames(element, runSettings.getTestNames());
     }
 
@@ -68,6 +70,7 @@ public class GinkgoSerializationUtil {
         ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(read(element, GINKGO_ADDITIONAL_OPTIONS));
         ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element));
         ginkgoRunConfigurationOptions.setFocusTestExpression(read(element, FOCUS_EXPRESSION));
+        ginkgoRunConfigurationOptions.setPackageName(read(element, PACKAGE_NAME));
         ginkgoRunConfigurationOptions.setTestNames(readTestNames(element));
 
         return ginkgoRunConfigurationOptions;

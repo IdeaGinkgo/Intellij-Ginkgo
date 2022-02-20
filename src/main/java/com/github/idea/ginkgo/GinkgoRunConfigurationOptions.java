@@ -26,7 +26,6 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     private String focusTestExpression;
     private List<String> testNames;
     private String packageName;
-    private String canonicalPackageName;
 
     public GinkgoRunConfigurationOptions() {
     }
@@ -103,14 +102,6 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-    }
-
-    public String getCanonicalPackageName() {
-        return canonicalPackageName;
-    }
-
-    public void setCanonicalPackageName(String canonicalPackageName) {
-        this.canonicalPackageName = canonicalPackageName;
     }
 
     @Override

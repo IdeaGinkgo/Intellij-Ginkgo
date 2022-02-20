@@ -5,14 +5,11 @@ import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.GinkgoRunConfigurationOptions;
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.GoEnvironmentUtil;
-import com.goide.GoOsManager;
 import com.goide.dlv.DlvVm;
 import com.goide.execution.GoRunUtil;
 import com.goide.execution.extension.GoExecutorExtension;
-import com.goide.i18n.GoBundle;
 import com.goide.sdk.GoSdkService;
 import com.goide.sdk.GoSdkUtil;
-import com.goide.util.GoUtil;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -30,7 +27,6 @@ import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Couple;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.EnvironmentUtil;
@@ -57,6 +53,7 @@ public class GinkgoRunningState implements RunProfileState {
     private InetSocketAddress myDebugAddress;
     private VirtualFile sdkRoot;
     private File outputFile;
+    private String buildCommand;
     @Nullable
     private volatile TargetValue<Integer> myDebugPortValue;
 
@@ -140,6 +137,7 @@ public class GinkgoRunningState implements RunProfileState {
             public void startNotify() {
                 notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
+                notifyTextAvailable(buildCommand + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 super.startNotify();
             }
         };
@@ -289,5 +287,13 @@ public class GinkgoRunningState implements RunProfileState {
 
     public void setOutputFile(File outputFile) {
         this.outputFile = outputFile;
+    }
+
+    public String getBuildCommand() {
+        return buildCommand;
+    }
+
+    public void setBuildCommand(String buildCommand) {
+        this.buildCommand = buildCommand;
     }
 }

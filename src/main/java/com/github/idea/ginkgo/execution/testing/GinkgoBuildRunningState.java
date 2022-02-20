@@ -42,6 +42,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
     private final AsyncPromise<RunContentDescriptor> buildingPromise;
     private VirtualFile sdkRoot;
     private File outputFile;
+    private String buildCommand;
 
 
     public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration, AsyncPromise<RunContentDescriptor> buildingPromise) {
@@ -73,14 +74,8 @@ public class GinkgoBuildRunningState implements RunProfileState {
                 .withWorkDirectory(runOptions.getWorkingDir())
                 .withCharset(StandardCharsets.UTF_8);
 
-        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
-            @Override
-            public void startNotify() {
-                notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
-                notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
-                super.startNotify();
-            }
-        };
+        buildCommand = commandLine.getCommandLineString();
+        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler);
         processHandler.addProcessListener(new ProcessAdapter() {
             @Override
@@ -88,7 +83,6 @@ public class GinkgoBuildRunningState implements RunProfileState {
                 if (event.getExitCode() != 0) {
                     buildingPromise.setError(new ExecutionException(GoBundle.message("go.execution.compilation.failed.notification.title", new Object[0])));
                 }
-                System.out.println("process terminated");
                 buildingPromise.setResult(environment.getContentToReuse());
             }
         });
@@ -161,12 +155,16 @@ public class GinkgoBuildRunningState implements RunProfileState {
         commandList.add(outputFile.getPath());
         commandList.add("-gcflags");
         commandList.add("all=-N -l");
-        commandList.add(options.getCanonicalPackageName());
+        commandList.add(".");
 
         return new GeneralCommandLine(commandList.stream().toArray(String[]::new));
     }
 
     public File getOutputFile() {
         return outputFile;
+    }
+
+    public String getBuildCommand() {
+        return buildCommand;
     }
 }
