@@ -3,6 +3,7 @@ package com.github.idea.ginkgo.execution;
 import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.execution.testing.GinkgoBuildRunningState;
 import com.github.idea.ginkgo.execution.testing.GinkgoRunningState;
+import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.dlv.DlvDisconnectOption;
 import com.goide.execution.GoRunUtil;
 import com.goide.i18n.GoBundle;
@@ -17,6 +18,7 @@ import com.intellij.execution.runners.RunContentBuilder;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -52,24 +54,39 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
     @Override
     protected Promise<RunContentDescriptor> execute(@NotNull ExecutionEnvironment environment, @NotNull RunProfileState state) throws ExecutionException {
         // Default executor
+        FileDocumentManager.getInstance().saveAllDocuments();
         if (!(state instanceof GinkgoRunningState) && !(state instanceof GinkgoBuildRunningState)) {
             ExecutionResult result = state.execute(environment.getExecutor(), this);
-            return Promises.resolvedPromise(result != null ? environment.getContentToReuse() : null);
+            RunContentDescriptor contentToReuse = environment.getContentToReuse();
+            return Promises.resolvedPromise(result != null ? (new RunContentBuilder(result, environment)).showRunContent(contentToReuse) : null);
         }
 
-
         GinkgoRunningState ginkgoRunningState = (GinkgoRunningState) state;
-
         // Ginkgo Debug
         final AsyncPromise<RunContentDescriptor> buildingPromise = new AsyncPromise();
         if (ginkgoRunningState.isDebug()) {
+            AsyncPromise<RunContentDescriptor> result = new AsyncPromise();
+
+            // Can only debug at package level for now
+            if (ginkgoRunningState.getConfiguration().getOptions().getGinkgoScope() == GinkgoScope.ALL) {
+                result.setError(new ExecutionException(GoBundle.message("go.test.cannot.run.compiling.on.directory.kind.run.configurations.error", new Object[0])));
+                return result;
+            }
+
             // Start Build Phase
             // In order to attach the debugger we must precompile the test binaries
             GinkgoBuildRunningState buildingState = new GinkgoBuildRunningState(environment, ginkgoRunningState.getProject(), ginkgoRunningState.getConfiguration(), buildingPromise);
             Task.Backgroundable task = new Task.Backgroundable(environment.getProject(), "Ginkgo Test") {
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
-                        buildingState.execute(environment.getExecutor(), GinkgoRunner.this);
+                        runOnEdt(()-> {
+                            try {
+                                buildingState.execute(environment.getExecutor(), GinkgoRunner.this);
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                        }, ModalityState.NON_MODAL);
+
                     } catch (ProcessCanceledException processCanceledException) {
                         throw processCanceledException;
                     } catch (Throwable throwable) {
@@ -85,15 +102,15 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
             // Run the build task in the background
             runOnEdt(() -> {
                 ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
-            }, ModalityState.defaultModalityState());
+            }, ModalityState.NON_MODAL);
             // End Build Phase
 
             // Start Debug Phase
             // After the test binaries have been compiled we run the test file with and attach the debugger
-            AsyncPromise<RunContentDescriptor> result = new AsyncPromise();
             buildingPromise.onSuccess(it -> {
                 ginkgoRunningState.getDebugServerAddress();
                 ginkgoRunningState.setOutputFile(buildingState.getOutputFile());
+                ginkgoRunningState.setBuildCommand(buildingState.getBuildCommand());
                 ginkgoRunningState.getDebugClientAddress().thenAsync((address) -> {
                     if (address == null) {
                         result.setError(new ExecutionException(GoBundle.message("go.execution.could.not.bind.remote.debugging.port.error", new Object[0])));
