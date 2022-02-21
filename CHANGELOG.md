@@ -3,6 +3,9 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Added
+- Experimental debug feature
+
 ## [0.3.1]
 ### Fixed
 - `When` nodes now generated a focus regex for V1/V2 Compatability
