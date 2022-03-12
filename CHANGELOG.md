@@ -4,7 +4,7 @@
 
 ## [Unreleased]
 ### Added
-- Experimental debug feature
+- debug feature
 
 ## [0.3.1]
 ### Fixed
