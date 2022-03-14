@@ -24,6 +24,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
     private static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
     private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
+    private static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} (.*)");
     private static final String SPEC_SEPARATOR = "------------------------------";
     public static final String SUCCESS_PREFIX_1 = "+";
     public static final String FAILURE_PREFIX_1 = "+ Failure";
@@ -83,6 +84,11 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         }
 
         if (ginkgoCLIException) {
+            return line.length();
+        }
+
+        if (LOG_OUTPUT.matcher(line).find()) {
+            processOutput(line, outputType, visitor);
             return line.length();
         }
 
