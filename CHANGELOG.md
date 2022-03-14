@@ -3,7 +3,7 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
-## Fixed
+### Fixed
 - Log messages being used as test names
 
 ## [0.4.0]
