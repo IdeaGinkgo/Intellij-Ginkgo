@@ -5,6 +5,10 @@
 ## [Unreleased]
 ### Fixed
 - Log messages being used as test names
+### Added
+- EAP support
+### Chore
+- Update build plugin to 1.3.1
 
 ## [0.4.0]
 ### Added
