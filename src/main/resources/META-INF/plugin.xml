@@ -9,6 +9,8 @@
     <depends>org.jetbrains.plugins.go</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <testFinder implementation="com.github.idea.ginkgo.execution.testing.GinkgoTestFinder"/>
+        <testCreator language="go" implementationClass="com.github.idea.ginkgo.execution.testing.creator.GinkgoFileTestCreator"/>
         <programRunner implementation="com.github.idea.ginkgo.execution.GinkgoRunner"/>
         <fileType name="Ginkgo"
                   implementationClass="com.github.idea.ginkgo.file.GinkgoFileType"
