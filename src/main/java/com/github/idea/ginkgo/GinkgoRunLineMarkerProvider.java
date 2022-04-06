@@ -8,6 +8,7 @@ import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoExpression;
 import com.goide.psi.GoReferenceExpression;
 import com.goide.util.GoUtil;
+import com.intellij.execution.TestStateStorage;
 import com.intellij.execution.lineMarker.ExecutorAction;
 import com.intellij.execution.lineMarker.RunLineMarkerContributor;
 import com.intellij.icons.AllIcons;
@@ -56,9 +57,21 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
             }
 
             if (GinkgoUtil.isGinkgoFunction(name) && args.size() >= 2) {
+                Icon icon = AllIcons.RunConfigurations.TestState.Run;
+                if (name.equalsIgnoreCase(GinkgoSpecType.IT.specType())) {
+                    List<String> specNames = GinkgoUtil.getSpecNames(e);
+                    String specName = specNames.remove(specNames.size() - 1);
+                    String specContext = String.join(" ", specNames);
+                    String testUrl = "gotest://" + GinkgoRunConfigurationProducer.GINKGO + "#" + specContext + "/" + specName;
+                    TestStateStorage.Record record = TestStateStorage.getInstance(e.getProject()).getState(testUrl);
+                    if (record != null) {
+                        icon = getTestStateIcon(record, false);
+                    }
+                }
+
                 AnAction[] runActions = ExecutorAction.getActions(0);
                 runActions = ArrayUtil.append(runActions, ActionManager.getInstance().getAction("GinkgoDisableSpec"));
-                return new Info(AllIcons.RunConfigurations.TestState.Run, TOOLTIP_PROVIDER, runActions);
+                return new Info(icon, TOOLTIP_PROVIDER, runActions);
             }
 
             if (GinkgoUtil.isGinkgoPendingFunction(name)) {
