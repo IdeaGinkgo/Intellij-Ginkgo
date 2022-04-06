@@ -2,6 +2,7 @@ package com.github.idea.ginkgo.util;
 
 import com.github.idea.ginkgo.GinkgoPendingSpecType;
 import com.github.idea.ginkgo.GinkgoSpecType;
+import com.github.idea.ginkgo.GinkgoTestSetupType;
 
 import java.util.Arrays;
 
@@ -9,6 +10,10 @@ public class GinkgoUtil {
 
     private GinkgoUtil() {
         //Util class should not be instantiated.
+    }
+
+    public static boolean isGinkgoTestSetup(String name) {
+        return Arrays.stream(GinkgoTestSetupType.class.getEnumConstants()).anyMatch(e -> e.testSetupType().equals(name));
     }
 
     public static boolean isGinkgoFunction(String name) {
