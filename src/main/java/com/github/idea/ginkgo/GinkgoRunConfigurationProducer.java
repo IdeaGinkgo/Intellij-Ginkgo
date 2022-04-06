@@ -1,6 +1,7 @@
 package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.scope.GinkgoScope;
+import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoFile;
 import com.intellij.execution.actions.ConfigurationContext;
@@ -58,25 +59,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
     }
 
     private List<String> getSpecNames(ConfigurationContext context) {
-        Deque<String> specTree = new ArrayDeque<>();
-        PsiElement location = context.getPsiLocation();
-        while (location.getParent() != null) {
-            location = location.getParent();
-            if (location.getParent() instanceof GoCallExpr) {
-                GoCallExpr parent = (GoCallExpr) location.getParent();
-                StringBuilder nodeNameBuilder = new StringBuilder();
-
-                //Special case append when for When blocks
-                if (parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
-                    nodeNameBuilder.append(WHEN);
-                }
-
-                nodeNameBuilder.append(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
-                specTree.push(nodeNameBuilder.toString());
-            }
-        }
-
-        return specTree.isEmpty() ? Arrays.asList(GINKGO) : new ArrayList<>(specTree);
+        return GinkgoUtil.getSpecNames(context.getPsiLocation());
     }
 
     @NotNull
