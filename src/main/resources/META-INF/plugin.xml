@@ -14,6 +14,8 @@
                   implementationClass="com.github.idea.ginkgo.file.GinkgoFileType"
                   order="first"/>
         <configurationType implementation="com.github.idea.ginkgo.GinkgoConfigurationType"/>
+        <breadcrumbsInfoProvider implementation="com.github.idea.ginkgo.GinkgoBreadcrumbsProvider"
+                                 order="first"/> <!-- needs to be before com.goide.editor.GoBreadcrumbsProvider, but it has no id -->
         <runLineMarkerContributor language="go"
                                   implementationClass="com.github.idea.ginkgo.GinkgoRunLineMarkerProvider"/>
         <runConfigurationProducer id="GinkgoRunConfigurationProducer"
