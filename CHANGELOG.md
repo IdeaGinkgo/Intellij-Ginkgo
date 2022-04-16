@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 ### Fixed
+- Support for multiple ginkgo command line flags
+### Added
+- Breadcrumb test navigator (thanks @adammw)
+
+## [0.4.1]
+### Fixed
 - Log messages being used as test names
 ### Added
 - EAP support
