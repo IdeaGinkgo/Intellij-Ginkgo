@@ -21,6 +21,9 @@
         <runConfigurationProducer id="GinkgoRunConfigurationProducer"
                                   implementation="com.github.idea.ginkgo.GinkgoRunConfigurationProducer"
                                   order="after GoApplicationRunConfigurationProducer"/>
+        <lang.psiStructureViewFactory language="go"
+                                      implementationClass="com.github.idea.ginkgo.structureView.GinkgoStructureViewFactory"
+                                      order="first"/> <!-- needs to be before com.goide.tree.GoStructureViewFactory, but it has no id -->
     </extensions>
     <actions>
         <action id="GinkgoEnableSpec" class="com.github.idea.ginkgo.actions.EnableSpec"/>

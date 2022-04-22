@@ -6,6 +6,7 @@ import com.github.idea.ginkgo.GinkgoSpecType;
 import com.github.idea.ginkgo.GinkgoTestSetupType;
 import com.goide.psi.GoCallExpr;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.ObjectUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -17,20 +18,20 @@ public class GinkgoUtil {
     }
     public static List<String> getSpecNames(@Nullable PsiElement location, boolean appendWhen) {
         Deque<String> specTree = new ArrayDeque<>();
-        while (location != null && location.getParent() != null) {
-            location = location.getParent();
-            if (location.getParent() instanceof GoCallExpr) {
-                GoCallExpr parent = (GoCallExpr) location.getParent();
+        while (location != null) {
+            GoCallExpr call = ObjectUtils.tryCast(location, GoCallExpr.class);
+            if (call != null) {
                 StringBuilder nodeNameBuilder = new StringBuilder();
 
                 //Special case append when for When blocks
-                if (appendWhen && parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
+                if (appendWhen && call.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
                     nodeNameBuilder.append(GinkgoRunConfigurationProducer.WHEN);
                 }
 
-                nodeNameBuilder.append(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
+                nodeNameBuilder.append(call.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
                 specTree.push(nodeNameBuilder.toString());
             }
+            location = location.getParent();
         }
 
         return specTree.isEmpty() ? Arrays.asList(GinkgoRunConfigurationProducer.GINKGO) : new ArrayList<>(specTree);
