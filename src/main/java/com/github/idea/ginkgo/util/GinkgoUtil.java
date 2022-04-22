@@ -15,7 +15,7 @@ public class GinkgoUtil {
     private GinkgoUtil() {
         //Util class should not be instantiated.
     }
-    public static List<String> getSpecNames(@Nullable PsiElement location) {
+    public static List<String> getSpecNames(@Nullable PsiElement location, boolean appendWhen) {
         Deque<String> specTree = new ArrayDeque<>();
         while (location != null && location.getParent() != null) {
             location = location.getParent();
@@ -24,7 +24,7 @@ public class GinkgoUtil {
                 StringBuilder nodeNameBuilder = new StringBuilder();
 
                 //Special case append when for When blocks
-                if (parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
+                if (appendWhen && parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
                     nodeNameBuilder.append(GinkgoRunConfigurationProducer.WHEN);
                 }
 

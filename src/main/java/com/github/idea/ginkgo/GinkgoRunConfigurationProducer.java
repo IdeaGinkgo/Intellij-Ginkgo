@@ -59,7 +59,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
     }
 
     private List<String> getSpecNames(ConfigurationContext context) {
-        return GinkgoUtil.getSpecNames(context.getPsiLocation());
+        return GinkgoUtil.getSpecNames(context.getPsiLocation(), true);
     }
 
     @NotNull
