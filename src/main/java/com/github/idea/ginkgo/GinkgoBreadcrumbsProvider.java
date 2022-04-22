@@ -17,6 +17,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.ObjectUtils;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,8 +58,8 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
     }
 
     @Override
-    public boolean acceptElement(@NotNull PsiElement e) {
-        GoCallExpr call = extractGinkgoMethodCall(e);
+    public boolean acceptElement(@NotNull PsiElement element) {
+        GoCallExpr call = extractGinkgoMethodCall(element);
         if (call != null && isGinkgoTestCall(call)) {
             return true;
         }
@@ -66,9 +67,18 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
             return true;
         }
 
+        // override and hide anonymous func() calls with direct parents of a ginkgo call
+        if (element instanceof GoFunctionLit &&
+                element.getParent() != null &&
+                element.getParent().getParent() instanceof GoCallExpr &&
+                (isGinkgoTestCall((GoCallExpr) element.getParent().getParent()) || isGinkgoTestSetupCall((GoCallExpr) element.getParent().getParent()))
+        ) {
+            return false;
+        }
+
         // fallthrough to go breadcrumbs
         // https://youtrack.jetbrains.com/issue/IJSDK-1383
-        return Objects.requireNonNull(getGoBreadcrumbProvider()).acceptElement(e);
+        return Objects.requireNonNull(getGoBreadcrumbProvider()).acceptElement(element);
     }
 
     @Override
@@ -95,29 +105,12 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
             return BreadcrumbsProvider.super.getElementIcon(e);
         }
 
-        String name = extractMethodName(call);
-        List<GoExpression> args = call.getArgumentList().getExpressionList();
-        if (GinkgoUtil.isTableEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return AllIcons.RunConfigurations.TestState.Yellow2;
-            }
+        Icon icon = GinkgoUtil.getIcon(call);
+        if (icon != null) {
+            return icon;
+        } else {
+            return BreadcrumbsProvider.super.getElementIcon(e);
         }
-
-        if (GinkgoUtil.isTablePendingEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return disabledTestIcon;
-            }
-        }
-
-        if (GinkgoUtil.isGinkgoFunction(name) && args.size() >= 2) {
-            return AllIcons.RunConfigurations.TestState.Run;
-        }
-
-        if (GinkgoUtil.isGinkgoPendingFunction(name)) {
-            return disabledTestIcon;
-        }
-
-        return BreadcrumbsProvider.super.getElementIcon(e);
     }
 
     @Override
@@ -153,18 +146,13 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
         return BreadcrumbsProvider.super.getContextActions(e);
     }
 
-    private @Nullable GoCallExpr extractGinkgoMethodCall(@NotNull PsiElement e) {
-        PsiFile file = e.getContainingFile();
-        if (!GoTestFinder.isTestFile(file) || !GoUtil.isInProject(file) || InjectedLanguageManager.getInstance(e.getProject()).isInjectedFragment(file)) {
+    private @Nullable GoCallExpr extractGinkgoMethodCall(@NotNull PsiElement element) {
+        PsiFile file = element.getContainingFile();
+        if (!GoTestFinder.isTestFile(file) || !GoUtil.isInProject(file) || InjectedLanguageManager.getInstance(element.getProject()).isInjectedFragment(file)) {
             return null;
         }
 
-        // we expect the element to be an anonymous function literal
-        // with the parent function call expression being the call to Ginkgo
-        if (!(e instanceof GoFunctionLit) || !(e.getParent() instanceof GoArgumentList) || !(e.getParent().getParent() instanceof GoCallExpr)) {
-            return null;
-        }
-        return (GoCallExpr) e.getParent().getParent();
+        return ObjectUtils.tryCast(element, GoCallExpr.class);
     }
 
     private @Nullable String extractMethodName(@NotNull GoCallExpr call) {

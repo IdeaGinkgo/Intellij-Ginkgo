@@ -59,11 +59,7 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
             if (GinkgoUtil.isGinkgoFunction(name) && args.size() >= 2) {
                 Icon icon = AllIcons.RunConfigurations.TestState.Run;
                 if (name.equalsIgnoreCase(GinkgoSpecType.IT.specType())) {
-                    List<String> specNames = GinkgoUtil.getSpecNames(e, false);
-                    String specName = specNames.remove(specNames.size() - 1);
-                    String specContext = String.join(" ", specNames);
-                    String testUrl = "gotest://" + GinkgoRunConfigurationProducer.GINKGO + "#" + specContext + "/" + specName;
-                    TestStateStorage.Record record = TestStateStorage.getInstance(e.getProject()).getState(testUrl);
+                    TestStateStorage.Record record = GinkgoUtil.getTestStateRecord(e);
                     if (record != null) {
                         icon = getTestStateIcon(record, false);
                     }

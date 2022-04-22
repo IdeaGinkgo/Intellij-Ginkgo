@@ -77,19 +77,7 @@ public class GinkgoStructureViewElement implements StructureViewTreeElement, Sor
             if (firstStringArg != null) {
                 presentableName += " " + firstStringArg.getDecodedText();
             }
-
-            List<String> specNames = GinkgoUtil.getSpecNames(myElement, false);
-            String specName = specNames.remove(specNames.size() - 1);
-            String specContext = String.join(" ", specNames);
-            String testUrl = "gotest://" + GinkgoRunConfigurationProducer.GINKGO + "#" + specContext + "/" + specName;
-
-            boolean isPending = GinkgoUtil.isGinkgoPendingFunction(methodName) || GinkgoUtil.isTablePendingEntity(methodName);
-            Icon icon = isPending ? AllIcons.RunConfigurations.TestIgnored : AllIcons.RunConfigurations.TestState.Run;
-            TestStateStorage.Record record = TestStateStorage.getInstance(myElement.getProject()).getState(testUrl);
-            if (record != null) {
-                icon = TestIconMapper.getIcon(TestIconMapper.getMagnitude(record.magnitude));
-            }
-
+            Icon icon = GinkgoUtil.getIcon(goCallExpr);
             return new PresentationData(presentableName, "", icon, null);
         }
     }
