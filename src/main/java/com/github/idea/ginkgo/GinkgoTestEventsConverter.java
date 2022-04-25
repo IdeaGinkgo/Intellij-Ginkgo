@@ -27,9 +27,11 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}[\\/-]\\d{2}[\\/-]\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(.*)");
     private static final String SPEC_SEPARATOR = "------------------------------";
     public static final String SUCCESS_PREFIX_1 = "+";
-    public static final String FAILURE_PREFIX_1 = "+ Failure";
     public static final String SUCCESS_PREFIX_2 = "•";
+    public static final String FAILURE_PREFIX_1 = "+ Failure";
     public static final String FAILURE_PREFIX_2 = "• Failure";
+    public static final String FAILURE_PREFIX_3 = "+ [FAILED]";
+    public static final String FAILURE_PREFIX_4 = "• [FAILED]";
     private Stack<String> suites = new Stack<>();
     private boolean inSuiteBlock;
     private String specContext;
@@ -40,6 +42,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private List<String> pendingSpecNames = new ArrayList<>();
     private boolean inPendingBlock;
     private boolean inBeforeSuite;
+    private boolean specCompleted = true;
     private boolean ginkgoCLIException;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
@@ -146,9 +149,10 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         }
 
         if (inSuiteBlock && StringUtils.isNotBlank(line)) {
-            if (line.startsWith(SPEC_SEPARATOR)) {
+            if (line.startsWith(SPEC_SEPARATOR) && specCompleted) {
                 processOutput(line, outputType, visitor);
                 specContext = null;
+                specCompleted = false;
                 specName = null;
                 tempLine = null;
                 return line.length();
@@ -168,15 +172,18 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
                 return line.length();
             }
 
-            if (line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2) ) {
+            if (line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
+                    || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.FAILED, visitor);
+                specCompleted = true;
                 return line.length();
             }
 
             if (line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.PASSED, visitor);
+                specCompleted = true;
                 return line.length();
             }
         }

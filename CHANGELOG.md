@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 ### Fixed
+- Failed test reporting in Ginkgo V2
+
+## [0.5.0]
+### Fixed
 - Support for multiple ginkgo command line flags
 ### Added
 - Breadcrumb test navigator (thanks @adammw)
