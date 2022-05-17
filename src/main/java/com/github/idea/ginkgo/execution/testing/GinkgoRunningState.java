@@ -186,10 +186,7 @@ public class GinkgoRunningState implements RunProfileState {
         List<String> commandList = new ArrayList<>();
         commandList.add(runOptions.getGinkgoExecutable());
         commandList.add("-v");
-
-        if (StringUtils.isNotEmpty(runOptions.getGinkgoAdditionalOptions())) {
-            commandList.addAll(Arrays.asList(runOptions.getGinkgoAdditionalOptions().split(" ")));
-        }
+        commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
 
         switch (runOptions.getGinkgoScope()) {
             case ALL:
@@ -201,7 +198,7 @@ public class GinkgoRunningState implements RunProfileState {
             default:
                 throw new IllegalStateException("Unexpected value: " + runOptions.getGinkgoScope());
         }
-        return new GeneralCommandLine(commandList.toArray(new String[0]));
+        return new GeneralCommandLine(commandList);
     }
 
     private GeneralCommandLine createDebugCommandLine() throws ExecutionException {
@@ -219,10 +216,7 @@ public class GinkgoRunningState implements RunProfileState {
         commandList.add(outputFile.getPath());
         commandList.add("--");
         commandList.add("-ginkgo.v");
-
-        if (StringUtils.isNotEmpty(options.getGinkgoAdditionalOptions())) {
-            commandList.addAll(Arrays.asList(options.getGinkgoAdditionalOptions().split(" ")));
-        }
+        commandList.addAll(options.getGinkgoAdditionalOptionsList());
 
         switch (options.getGinkgoScope()) {
             case ALL:
@@ -233,7 +227,7 @@ public class GinkgoRunningState implements RunProfileState {
             default:
                 throw new IllegalStateException("Unexpected value: " + options.getGinkgoScope());
         }
-        return new GeneralCommandLine(commandList.toArray(new String[0]));
+        return new GeneralCommandLine(commandList);
     }
 
 

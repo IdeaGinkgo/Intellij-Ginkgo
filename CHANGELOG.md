@@ -5,6 +5,9 @@
 ## [Unreleased]
 ### Fixed
 - Failed test reporting in Ginkgo V2
+- Quoted command lines
+### Added
+- Test status icon in gutter
 
 ## [0.5.0]
 ### Fixed
