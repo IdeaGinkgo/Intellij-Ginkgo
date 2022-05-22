@@ -12,7 +12,6 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.util.NlsSafe;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.breadcrumbs.BreadcrumbsProvider;
