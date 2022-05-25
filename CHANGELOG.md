@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 ### Fixed
+- Focus test expressions persists between restarts
+### Chore
+- Update build plugin to 1.6.0
+
+## [0.6.0]
+### Fixed
 - Failed test reporting in Ginkgo V2
 - Quoted command lines
 ### Added

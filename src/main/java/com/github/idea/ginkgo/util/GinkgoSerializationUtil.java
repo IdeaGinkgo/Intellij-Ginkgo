@@ -34,7 +34,7 @@ public class GinkgoSerializationUtil {
         writePath(element, WORKING_DIR, runSettings.getWorkingDir());
         runSettings.getEnvData().writeExternal(element);
         writeNonEmptyField(element, GINKGO_ADDITIONAL_OPTIONS, runSettings.getGinkgoAdditionalOptions());
-        write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().getLabel());
+        write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().name());
         write(element, FOCUS_EXPRESSION, runSettings.getFocusTestExpression());
         write(element, PACKAGE_NAME, runSettings.getPackageName());
         writeTestNames(element, runSettings.getTestNames());
