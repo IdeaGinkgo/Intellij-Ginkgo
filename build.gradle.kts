@@ -80,6 +80,7 @@ tasks {
 
     test {
         useJUnitPlatform()
+        systemProperty("idea.force.use.core.classloader", "true")
     }
 
     patchPluginXml {

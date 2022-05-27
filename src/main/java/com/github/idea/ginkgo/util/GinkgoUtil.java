@@ -20,20 +20,20 @@ public class GinkgoUtil {
         while (location != null && location.getParent() != null) {
             location = location.getParent();
             if (location.getParent() instanceof GoCallExpr) {
-                GoCallExpr parent = (GoCallExpr) location.getParent();
+                GoCallExpr ginkgoSpecFunction = (GoCallExpr) location.getParent();
                 StringBuilder nodeNameBuilder = new StringBuilder();
 
                 //Special case append when for When blocks
-                if (appendWhen && parent.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
+                if (appendWhen && ginkgoSpecFunction.getExpression().getText().equalsIgnoreCase(GinkgoSpecType.WHEN.specType())) {
                     nodeNameBuilder.append(GinkgoRunConfigurationProducer.WHEN);
                 }
 
-                nodeNameBuilder.append(parent.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
+                nodeNameBuilder.append(ginkgoSpecFunction.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
                 specTree.push(nodeNameBuilder.toString());
             }
         }
 
-        return specTree.isEmpty() ? Arrays.asList(GinkgoRunConfigurationProducer.GINKGO) : new ArrayList<>(specTree);
+        return specTree.isEmpty() ? Collections.singletonList(GinkgoRunConfigurationProducer.GINKGO) : new ArrayList<>(specTree);
     }
 
     public static boolean isGinkgoTestSetup(String name) {

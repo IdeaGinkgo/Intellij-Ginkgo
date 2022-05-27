@@ -3,6 +3,7 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+## [0.6.1]
 ### Fixed
 - Focus test expressions persists between restarts
 ### Chore
