@@ -28,12 +28,17 @@ public class GinkgoUtil {
                     nodeNameBuilder.append(GinkgoRunConfigurationProducer.WHEN);
                 }
 
-                nodeNameBuilder.append(ginkgoSpecFunction.getArgumentList().getExpressionList().get(0).getText().replace("\"", ""));
+                String specName = escapeRegexCharacters(ginkgoSpecFunction.getArgumentList().getExpressionList().get(0).getText());
+                nodeNameBuilder.append(specName);
                 specTree.push(nodeNameBuilder.toString());
             }
         }
 
         return specTree.isEmpty() ? Collections.singletonList(GinkgoRunConfigurationProducer.GINKGO) : new ArrayList<>(specTree);
+    }
+
+    private static String escapeRegexCharacters(String specName) {
+        return specName.replace("\"", "").replace("(", "\\(").replace(")", "\\)");
     }
 
     public static boolean isGinkgoTestSetup(String name) {

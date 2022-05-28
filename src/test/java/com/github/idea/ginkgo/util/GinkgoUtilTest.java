@@ -40,5 +40,6 @@ class GinkgoUtilTest extends BasePlatformTestCase {
         assertSpecNames("focus_expression_l3.go", "Book Categorizing book length With more than 300 pages should be a novel");
         assertSpecNames("focus_expression_when.go", "Book Categorizing book length (when )?When Test should be a short story");
         assertSpecNames("focus_expression_table.go", "Book Category Table Novel");
+        assertSpecNames("focus_expression_special_characters.go", "Book Categorizing book length (when )?When Test should be a \\(short\\) story");
     }
 }

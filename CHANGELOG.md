@@ -3,6 +3,9 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Escape parentheses in spec names
+
 ## [0.6.1]
 ### Fixed
 - Focus test expressions persists between restarts
