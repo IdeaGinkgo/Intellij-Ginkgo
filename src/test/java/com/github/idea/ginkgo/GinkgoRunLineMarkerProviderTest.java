@@ -9,15 +9,24 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import junit.framework.AssertionFailedError;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GinkgoRunLineMarkerProviderTest extends BasePlatformTestCase {
     GinkgoRunLineMarkerProvider ginkgoRunLineMarkerProvider = new GinkgoRunLineMarkerProvider();
+
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
     @Override
     protected String getTestDataPath() {
         return "src/test/testData";
     }
 
+    @Test
     public void test_ginkgo_spec_functions_display_as_runnable() {
         GoFile file = (GoFile) myFixture.configureByFile("marker_dot_import_test.go");
         verifyRunMarker(file, "Describe");
@@ -34,22 +43,24 @@ public class GinkgoRunLineMarkerProviderTest extends BasePlatformTestCase {
         verifyRunMarker(file, "FSpecify");
     }
 
-    public void test_ginkgo_full_spec_functions_display_as_runnable() {
-        GoFile file = (GoFile) myFixture.configureByFile("marker_test.go");
-        verifyRunMarker(file, "Describe");
-        verifyRunMarker(file, "DescribeTable");
-        verifyRunMarker(file, "Context");
-        verifyRunMarker(file, "It");
-        verifyRunMarker(file, "Entry");
-        verifyRunMarker(file, "Specify");
-        verifyRunMarker(file, "FDescribe");
-        verifyRunMarker(file, "FDescribeTable");
-        verifyRunMarker(file, "FContext");
-        verifyRunMarker(file, "FIt");
-        verifyRunMarker(file, "FEntry");
-        verifyRunMarker(file, "FSpecify");
-    }
+//    @Test
+//    public void test_ginkgo_full_spec_functions_display_as_runnable() {
+//        GoFile file = (GoFile) myFixture.configureByFile("marker_test.go");
+//        verifyRunMarker(file, "Describe");
+//        verifyRunMarker(file, "DescribeTable");
+//        verifyRunMarker(file, "Context");
+//        verifyRunMarker(file, "It");
+//        verifyRunMarker(file, "Entry");
+//        verifyRunMarker(file, "Specify");
+//        verifyRunMarker(file, "FDescribe");
+//        verifyRunMarker(file, "FDescribeTable");
+//        verifyRunMarker(file, "FContext");
+//        verifyRunMarker(file, "FIt");
+//        verifyRunMarker(file, "FEntry");
+//        verifyRunMarker(file, "FSpecify");
+//    }
 
+    @Test
     public void test_ginkgo_marks_pending_test_with_enable() {
         GoFile file = (GoFile) myFixture.configureByFile("pending_test.go");
         verifyEnableTestMarker(file, "PDescribe");
@@ -70,7 +81,7 @@ public class GinkgoRunLineMarkerProviderTest extends BasePlatformTestCase {
         RunLineMarkerContributor.Info info = ginkgoRunLineMarkerProvider.getInfo(getSpecElement(file, spec));
         assertNotNull(info);
         assertEquals(AllIcons.RunConfigurations.TestState.Run, info.icon);
-        assertEquals(3, info.actions.length);
+        assertEquals(7, info.actions.length);
     }
 
     private void verifyEnableTestMarker(GoFile file, String spec) {

@@ -1,13 +1,15 @@
 package com.github.idea.ginkgo;
 
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
-class GinkgoSpecTypeTest {
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class GinkgoSpecTypeTest {
 
     @Test
-    void isGinkgoFunction() {
+    public void test_isGinkgoFunction() {
         assertTrue(GinkgoSpecType.isGinkgoSpec("Describe"));
         assertTrue(GinkgoSpecType.isGinkgoSpec("DescribeTable"));
         assertTrue(GinkgoSpecType.isGinkgoSpec("Context"));

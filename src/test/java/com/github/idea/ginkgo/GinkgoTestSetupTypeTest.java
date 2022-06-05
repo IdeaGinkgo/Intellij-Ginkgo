@@ -1,14 +1,15 @@
 package com.github.idea.ginkgo;
 
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-class GinkgoTestSetupTypeTest {
+public class GinkgoTestSetupTypeTest {
 
     @Test
-    void isGinkgoTestSetupType() {
+    public void test_isGinkgoTestSetupType() {
         assertTrue(GinkgoTestSetupType.isGinkgoTestSetup("BeforeSuite"));
         assertTrue(GinkgoTestSetupType.isGinkgoTestSetup("AfterSuite"));
         assertTrue(GinkgoTestSetupType.isGinkgoTestSetup("SynchronizedBeforeSuite"));

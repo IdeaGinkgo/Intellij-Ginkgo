@@ -79,7 +79,9 @@ tasks {
     }
 
     test {
-        useJUnitPlatform()
+        isScanForTestClasses = false
+        // Only run tests from classes that end with "Test"
+        include("**/*Test.class")
         systemProperty("idea.force.use.core.classloader", "true")
     }
 

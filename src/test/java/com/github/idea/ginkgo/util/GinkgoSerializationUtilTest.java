@@ -5,16 +5,16 @@ import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import org.jdom.Element;
 import org.jdom.located.LocatedElement;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static junit.framework.TestCase.assertEquals;
 
-class GinkgoSerializationUtilTest {
+public class GinkgoSerializationUtilTest {
 
     @Test
-    void serialized_deserialize_all_test_config() {
+    public void test_serialized_deserialize_all_test_config() {
         GinkgoRunConfigurationOptions configOptions = new GinkgoRunConfigurationOptions();
         configOptions.setGinkgoExecutable("ginkgo");
         configOptions.setWorkingDir("/workspace");
@@ -32,7 +32,7 @@ class GinkgoSerializationUtilTest {
     }
 
     @Test
-    void serialized_deserialize_focus_test_config() {
+    public void test_serialized_deserialize_focus_test_config() {
         GinkgoRunConfigurationOptions configOptions = new GinkgoRunConfigurationOptions();
         configOptions.setGinkgoExecutable("ginkgo");
         configOptions.setWorkingDir("/workspace");
