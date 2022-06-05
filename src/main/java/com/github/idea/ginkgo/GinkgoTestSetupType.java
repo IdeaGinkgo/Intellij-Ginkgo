@@ -1,5 +1,7 @@
 package com.github.idea.ginkgo;
 
+import java.util.EnumSet;
+
 public enum GinkgoTestSetupType {
     BEFORE_SUITE("BeforeSuite"),
     AFTER_SUITE("AfterSuite"),
@@ -21,5 +23,9 @@ public enum GinkgoTestSetupType {
 
     public String testSetupType() {
         return testSetupType;
+    }
+
+    public static boolean isGinkgoTestSetup(String spec) {
+        return EnumSet.allOf(GinkgoTestSetupType.class).stream().anyMatch(e -> e.testSetupType.equals(spec));
     }
 }

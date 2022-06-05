@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Add tests for run line marker
+
+## [0.6.2]
 ### Fixed
 - Escape parentheses in spec names
 
