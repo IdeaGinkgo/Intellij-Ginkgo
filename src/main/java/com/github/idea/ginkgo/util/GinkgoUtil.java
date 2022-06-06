@@ -6,6 +6,7 @@ import com.github.idea.ginkgo.GinkgoSpecType;
 import com.github.idea.ginkgo.GinkgoTestSetupType;
 import com.goide.psi.GoCallExpr;
 import com.intellij.psi.PsiElement;
+import org.bouncycastle.util.Strings;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -46,7 +47,8 @@ public class GinkgoUtil {
     }
 
     public static boolean isGinkgoFunction(String name) {
-        return Arrays.stream(GinkgoSpecType.class.getEnumConstants()).anyMatch(e -> e.specType().equals(name));
+        String[] split = Strings.split(name, '.');
+        return Arrays.stream(GinkgoSpecType.class.getEnumConstants()).anyMatch(e -> e.specType().equals(split[split.length-1]));
     }
 
     public static boolean isGinkgoPendingFunction(String name) {

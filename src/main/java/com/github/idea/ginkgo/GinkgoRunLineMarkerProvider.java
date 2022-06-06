@@ -3,16 +3,14 @@ package com.github.idea.ginkgo;
 import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.GoIcons;
 import com.goide.GoTypes;
-import com.goide.execution.testing.GoTestFinder;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoExpression;
+import com.goide.psi.GoFile;
 import com.goide.psi.GoReferenceExpression;
-import com.goide.util.GoUtil;
 import com.intellij.execution.TestStateStorage;
 import com.intellij.execution.lineMarker.ExecutorAction;
 import com.intellij.execution.lineMarker.RunLineMarkerContributor;
 import com.intellij.icons.AllIcons;
-import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
@@ -35,7 +33,7 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     @Nullable
     public Info getInfo(@NotNull PsiElement e) {
         PsiFile file = e.getContainingFile();
-        if (!GoTestFinder.isTestFile(file) || !GoUtil.isInProject(file) || InjectedLanguageManager.getInstance(e.getProject()).isInjectedFragment(file)) {
+        if (!isGinkgoTestFile(file)) {
             return null;
         }
 
@@ -80,5 +78,13 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
         }
 
         return null;
+    }
+
+    public boolean isGinkgoTestFile(PsiFile file) {
+        return file instanceof GoFile && importsGinkgo((GoFile) file);
+    }
+
+    private boolean importsGinkgo(GoFile file) {
+        return file.getImports().stream().anyMatch(i -> i.getPath().contains("github.com/onsi/ginkgo"));
     }
 }

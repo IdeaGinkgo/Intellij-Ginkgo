@@ -43,22 +43,39 @@ public class GinkgoRunLineMarkerProviderTest extends BasePlatformTestCase {
         verifyRunMarker(file, "FSpecify");
     }
 
-//    @Test
-//    public void test_ginkgo_full_spec_functions_display_as_runnable() {
-//        GoFile file = (GoFile) myFixture.configureByFile("marker_test.go");
-//        verifyRunMarker(file, "Describe");
-//        verifyRunMarker(file, "DescribeTable");
-//        verifyRunMarker(file, "Context");
-//        verifyRunMarker(file, "It");
-//        verifyRunMarker(file, "Entry");
-//        verifyRunMarker(file, "Specify");
-//        verifyRunMarker(file, "FDescribe");
-//        verifyRunMarker(file, "FDescribeTable");
-//        verifyRunMarker(file, "FContext");
-//        verifyRunMarker(file, "FIt");
-//        verifyRunMarker(file, "FEntry");
-//        verifyRunMarker(file, "FSpecify");
-//    }
+    @Test
+    public void test_ginkgo_full_spec_functions_display_as_runnable() {
+        GoFile file = (GoFile) myFixture.configureByFile("marker_test.go");
+        verifyRunMarker(file, "Describe");
+        verifyRunMarker(file, "DescribeTable");
+        verifyRunMarker(file, "Context");
+        verifyRunMarker(file, "It");
+        verifyRunMarker(file, "Entry");
+        verifyRunMarker(file, "Specify");
+        verifyRunMarker(file, "FDescribe");
+        verifyRunMarker(file, "FDescribeTable");
+        verifyRunMarker(file, "FContext");
+        verifyRunMarker(file, "FIt");
+        verifyRunMarker(file, "FEntry");
+        verifyRunMarker(file, "FSpecify");
+    }
+
+    @Test
+    public void test_ginkgo_specs_in_non_test_files() {
+        GoFile file = (GoFile) myFixture.configureByFile("ginkgo.go");
+        verifyRunMarker(file, "Describe");
+        verifyRunMarker(file, "DescribeTable");
+        verifyRunMarker(file, "Context");
+        verifyRunMarker(file, "It");
+        verifyRunMarker(file, "Entry");
+        verifyRunMarker(file, "Specify");
+        verifyRunMarker(file, "FDescribe");
+        verifyRunMarker(file, "FDescribeTable");
+        verifyRunMarker(file, "FContext");
+        verifyRunMarker(file, "FIt");
+        verifyRunMarker(file, "FEntry");
+        verifyRunMarker(file, "FSpecify");
+    }
 
     @Test
     public void test_ginkgo_marks_pending_test_with_enable() {

@@ -3,6 +3,8 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Improved test detection for non . imports ie `ginkgo.It` and non `_test.go` files
 ### Chore
 - Add tests for run line marker
 
