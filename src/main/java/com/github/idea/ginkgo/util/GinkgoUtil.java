@@ -5,6 +5,8 @@ import com.github.idea.ginkgo.GinkgoRunConfigurationProducer;
 import com.github.idea.ginkgo.GinkgoSpecType;
 import com.github.idea.ginkgo.GinkgoTestSetupType;
 import com.goide.psi.GoCallExpr;
+import com.goide.psi.GoExpression;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
 import org.bouncycastle.util.Strings;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class GinkgoUtil {
+    public static final Logger LOG = Logger.getInstance(GinkgoUtil.class);
 
     private GinkgoUtil() {
         //Util class should not be instantiated.
@@ -29,13 +32,23 @@ public class GinkgoUtil {
                     nodeNameBuilder.append(GinkgoRunConfigurationProducer.WHEN);
                 }
 
-                String specName = escapeRegexCharacters(ginkgoSpecFunction.getArgumentList().getExpressionList().get(0).getText());
+                String specName = escapeRegexCharacters(getSpecDescription(ginkgoSpecFunction).orElse(""));
                 nodeNameBuilder.append(specName);
                 specTree.push(nodeNameBuilder.toString());
             }
         }
 
         return specTree.isEmpty() ? Collections.singletonList(GinkgoRunConfigurationProducer.GINKGO) : new ArrayList<>(specTree);
+    }
+
+    private static Optional<String> getSpecDescription(GoCallExpr ginkgoSpecFunction) {
+        List<GoExpression> expressionList = ginkgoSpecFunction.getArgumentList().getExpressionList();
+        if (expressionList.isEmpty()) {
+            LOG.error("Could not get spec description for function: %s", ginkgoSpecFunction.getText());
+            return Optional.empty();
+        }
+
+        return Optional.of(expressionList.get(0).getText());
     }
 
     private static String escapeRegexCharacters(String specName) {
