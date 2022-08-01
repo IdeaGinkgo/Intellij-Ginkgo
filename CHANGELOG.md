@@ -2,6 +2,10 @@
 
 # Intellij-ginkgo Changelog
 
+## [0.6.4]
+### Chore
+- Update build plugin to 1.7.0
+
 ## [Unreleased]
 ### Fixed
 - Improved test detection for non . imports ie `ginkgo.It` and non `_test.go` files
@@ -85,7 +89,7 @@
 - Linux test completion indicators
 
 ## [0.0.3]
-### Added 
+### Added
 - Improved run dialog
 - Added test reporter functionality
 - Improved focus test selection
