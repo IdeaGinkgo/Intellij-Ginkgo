@@ -158,6 +158,10 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     @NotNull
     public String findGinkgoByEnv() {
         String goBinPath = GoEnvironmentUtil.retrieveGoBinFromEnvironment();
+        if (goBinPath == null) {
+            return "";
+        }
+
         if (GoOsManager.isWindows()) {
             String ginkgoPath = Paths.get(goBinPath, "ginkgo.exe").toString();
             if (new File(ginkgoPath).exists()) {
