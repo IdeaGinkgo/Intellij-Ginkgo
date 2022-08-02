@@ -4,7 +4,6 @@ import com.github.idea.ginkgo.GinkgoRunConfigurationOptions;
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.intellij.execution.configuration.EnvironmentVariablesData;
 import org.jdom.Element;
-import org.jdom.located.LocatedElement;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public class GinkgoSerializationUtilTest {
         configOptions.setGinkgoScope(GinkgoScope.ALL);
         configOptions.setFocusTestExpression("");
         configOptions.setTestNames(Arrays.asList("ginkgo all"));
-        Element element = new LocatedElement("ginkgo_config");
+        Element element = new Element("ginkgo_config");
 
         GinkgoSerializationUtil.writeXml(element, configOptions);
         GinkgoRunConfigurationOptions result = GinkgoSerializationUtil.readXml(element);
@@ -41,7 +40,7 @@ public class GinkgoSerializationUtilTest {
         configOptions.setGinkgoScope(GinkgoScope.FOCUS);
         configOptions.setFocusTestExpression("books");
         configOptions.setTestNames(Arrays.asList("books"));
-        Element element = new LocatedElement("ginkgo_config");
+        Element element = new Element("ginkgo_config");
 
         GinkgoSerializationUtil.writeXml(element, configOptions);
         GinkgoRunConfigurationOptions result = GinkgoSerializationUtil.readXml(element);
