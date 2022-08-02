@@ -3,6 +3,11 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Updated to support 2022.2
+- Update build plugin to 1.7.0
+
+## [0.6.4]
 ### Fixed
 - Improved test detection for non . imports ie `ginkgo.It` and non `_test.go` files
 - Add bound check when computing ginkgo expressions
