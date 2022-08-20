@@ -33,8 +33,8 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     public static final String FAILURE_PREFIX_3 = "+ [FAILED]";
     public static final String FAILURE_PREFIX_4 = "• [FAILED]";
 
-    public static final String PANIC_PREFIX_1 = "+! Panicked";
-    public static final String PANIC_PREFIX_2 = "•! Panicked";
+    public static final String PANIC_PREFIX_1 = "+! Panic";
+    public static final String PANIC_PREFIX_2 = "•! Panic";
     public static final String PANIC_PREFIX_3 = "+! [PANICKED]";
     public static final String PANIC_PREFIX_4 = "•! [PANICKED]";
     private Stack<String> suites = new Stack<>();
