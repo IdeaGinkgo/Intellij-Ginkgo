@@ -32,6 +32,11 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     public static final String FAILURE_PREFIX_2 = "• Failure";
     public static final String FAILURE_PREFIX_3 = "+ [FAILED]";
     public static final String FAILURE_PREFIX_4 = "• [FAILED]";
+
+    public static final String PANIC_PREFIX_1 = "+! Panicked";
+    public static final String PANIC_PREFIX_2 = "•! Panicked";
+    public static final String PANIC_PREFIX_3 = "+! [PANICKED]";
+    public static final String PANIC_PREFIX_4 = "•! [PANICKED]";
     private Stack<String> suites = new Stack<>();
     private boolean inSuiteBlock;
     private String specContext;
@@ -172,8 +177,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
                 return line.length();
             }
 
-            if (line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
-                    || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4)) {
+            if (isFailure(line) || isPanic(line)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.FAILED, visitor);
                 specCompleted = true;
@@ -190,6 +194,16 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
         processOutput(line, outputType, visitor);
         return line.length();
+    }
+
+    private static boolean isFailure(@NotNull String line) {
+        return line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
+                || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4);
+    }
+
+    private static boolean isPanic(@NotNull String line) {
+        return line.startsWith(PANIC_PREFIX_1) || line.startsWith(PANIC_PREFIX_2)
+                || line.startsWith(PANIC_PREFIX_3) || line.startsWith(PANIC_PREFIX_4);
     }
 
     private int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {

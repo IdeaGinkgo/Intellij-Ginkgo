@@ -3,11 +3,15 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Panics not being recognized by output parser
+
+## [0.6.4]
 ### Chore
 - Updated to support 2022.2
 - Update build plugin to 1.7.0
 
-## [0.6.4]
+## [0.6.3]
 ### Fixed
 - Improved test detection for non . imports ie `ginkgo.It` and non `_test.go` files
 - Add bound check when computing ginkgo expressions
