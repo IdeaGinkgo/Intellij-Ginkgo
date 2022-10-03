@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Bump intellij gradle plugin to 1.9.0
+
+## [0.6.5]
 ### Fixed
 - Panics not being recognized by output parser
 
