@@ -13,12 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class GinkgoRunLineMarkerProviderTest extends BasePlatformTestCase {
-    GinkgoRunLineMarkerProvider ginkgoRunLineMarkerProvider = new GinkgoRunLineMarkerProvider();
+    GinkgoRunLineMarkerProvider ginkgoRunLineMarkerProvider;
 
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ginkgoRunLineMarkerProvider = new GinkgoRunLineMarkerProvider();
     }
 
     @Override
