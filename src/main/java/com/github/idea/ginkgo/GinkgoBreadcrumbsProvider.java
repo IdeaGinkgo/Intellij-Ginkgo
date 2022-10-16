@@ -7,7 +7,6 @@ import com.intellij.execution.PsiLocation;
 import com.intellij.execution.lineMarker.ExecutorAction;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.Language;
-import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.IndexNotReadyException;
@@ -21,11 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.goide.GoLanguage;
-import com.goide.GoIcons;
 import com.goide.editor.GoBreadcrumbsProvider;
-import com.goide.execution.testing.GoTestFinder;
 import com.goide.psi.*;
-import com.goide.util.GoUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -35,10 +31,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.github.idea.ginkgo.GinkgoSpecs.*;
+import static com.github.idea.ginkgo.icons.GinkgoIcons.DISABLED_TEST_ICON;
+import static com.github.idea.ginkgo.icons.GinkgoIcons.DISABLE_SPEC_ICON;
+import static com.github.idea.ginkgo.util.GinkgoUtil.isGinkgoTestFile;
+
 
 public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
     private static final Language[] LANGUAGES = {GoLanguage.INSTANCE};
-    private static final Icon disabledTestIcon = GoIcons.Helper.createIconWithShift(AllIcons.RunConfigurations.TestIgnored, AllIcons.Nodes.RunnableMark);
 
     public static @Nullable BreadcrumbsProvider getGoBreadcrumbProvider() {
         BreadcrumbsProvider[] providers = BreadcrumbsProvider.EP_NAME.getExtensions();
@@ -96,24 +96,20 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
 
         String name = extractMethodName(call);
         List<GoExpression> args = call.getArgumentList().getExpressionList();
-        if (GinkgoUtil.isTableEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return AllIcons.RunConfigurations.TestState.Yellow2;
-            }
+        if (isTableEntity(name) && args.size() >= 2 && args.get(0) instanceof GoReferenceExpression) {
+            return DISABLE_SPEC_ICON;
         }
 
-        if (GinkgoUtil.isTablePendingEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return disabledTestIcon;
-            }
+        if (isTablePendingEntity(name) && args.size() >= 2 && args.get(0) instanceof GoReferenceExpression) {
+            return DISABLED_TEST_ICON;
         }
 
-        if (GinkgoUtil.isGinkgoFunction(name) && args.size() >= 2) {
+        if (isGinkgoActiveSpec(name) && args.size() >= 2) {
             return AllIcons.RunConfigurations.TestState.Run;
         }
 
-        if (GinkgoUtil.isGinkgoPendingFunction(name)) {
-            return disabledTestIcon;
+        if (isGinkgoPendingSpec(name)) {
+            return DISABLED_TEST_ICON;
         }
 
         return BreadcrumbsProvider.super.getElementIcon(e);
@@ -128,25 +124,21 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
 
         String name = extractMethodName(call);
         List<GoExpression> args = call.getArgumentList().getExpressionList();
-        if (GinkgoUtil.isTableEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return convertIdeaActionToSwingAction(e, new AnAction[]{ActionManager.getInstance().getAction("GinkgoDisableSpec")});
-            }
+        if (isTableEntity(name) && args.size() >= 2 && args.get(0) instanceof GoReferenceExpression) {
+            return convertIdeaActionToSwingAction(e, new AnAction[]{ActionManager.getInstance().getAction("GinkgoDisableSpec")});
         }
 
-        if (GinkgoUtil.isTablePendingEntity(name) && args.size() >= 2) {
-            if (args.get(0) instanceof GoReferenceExpression) {
-                return convertIdeaActionToSwingAction(e, new AnAction[]{ActionManager.getInstance().getAction("GinkgoEnableSpec")});
-            }
+        if (isTablePendingEntity(name) && args.size() >= 2 && args.get(0) instanceof GoReferenceExpression) {
+            return convertIdeaActionToSwingAction(e, new AnAction[]{ActionManager.getInstance().getAction("GinkgoEnableSpec")});
         }
 
-        if (GinkgoUtil.isGinkgoFunction(name) && args.size() >= 2) {
+        if (isGinkgoActiveSpec(name) && args.size() >= 2) {
             AnAction[] runActions = ExecutorAction.getActions(0);
-            ArrayUtil.append(runActions, ActionManager.getInstance().getAction("GinkgoDisableSpec"));
+            runActions = ArrayUtil.append(runActions, ActionManager.getInstance().getAction("GinkgoDisableSpec"));
             return convertIdeaActionToSwingAction(e, runActions);
         }
 
-        if (GinkgoUtil.isGinkgoPendingFunction(name)) {
+        if (isGinkgoPendingSpec(name)) {
             return convertIdeaActionToSwingAction(e, new AnAction[]{ActionManager.getInstance().getAction("GinkgoEnableSpec")});
         }
         return BreadcrumbsProvider.super.getContextActions(e);
@@ -154,7 +146,7 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
 
     private @Nullable GoCallExpr extractGinkgoMethodCall(@NotNull PsiElement e) {
         PsiFile file = e.getContainingFile();
-        if (!GoTestFinder.isTestFile(file) || !GoUtil.isInProject(file) || InjectedLanguageManager.getInstance(e.getProject()).isInjectedFragment(file)) {
+        if (!isGinkgoTestFile(file)) {
             return null;
         }
 
@@ -181,14 +173,11 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
         }
 
         List<GoExpression> args = call.getArgumentList().getExpressionList();
-        if (args.size() < 1 || !(args.get(0) instanceof GoStringLiteral)) {
+        if (args.isEmpty() || !(args.get(0) instanceof GoStringLiteral)) {
             return false;
         }
 
-        return GinkgoUtil.isTableEntity(methodName) ||
-            GinkgoUtil.isTablePendingEntity(methodName) ||
-            GinkgoUtil.isGinkgoFunction(methodName) ||
-            GinkgoUtil.isGinkgoPendingFunction(methodName);
+        return getSpec(methodName) != GinkgoSpecs.INVALID;
     }
 
     private boolean isGinkgoTestSetupCall(@NotNull GoCallExpr call) {
@@ -227,7 +216,7 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
                                 return Stream.empty();
                             }
                         }
-                    } catch(IndexNotReadyException ignored) {
+                    } catch (IndexNotReadyException ignored) {
                         return Stream.empty();
                     }
 

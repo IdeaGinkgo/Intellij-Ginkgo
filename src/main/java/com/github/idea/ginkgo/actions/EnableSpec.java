@@ -1,6 +1,7 @@
 package com.github.idea.ginkgo.actions;
 
-import com.github.idea.ginkgo.GinkgoPendingSpecType;
+import com.github.idea.ginkgo.GinkgoSpec;
+import com.github.idea.ginkgo.GinkgoSpecs;
 import com.goide.psi.impl.GoElementFactory;
 import com.intellij.execution.Location;
 import com.intellij.icons.AllIcons;
@@ -11,7 +12,7 @@ import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.idea.ginkgo.util.GinkgoUtil.getGinkgoPendingSpecType;
+import java.util.Objects;
 
 public class EnableSpec extends AnAction {
 
@@ -22,9 +23,10 @@ public class EnableSpec extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Location<?> location = e.getData(Location.DATA_KEY);
+        assert location != null;
         PsiElement psiElement = location.getPsiElement();
-        GinkgoPendingSpecType pendingSpec = getGinkgoPendingSpecType(psiElement.getText());
-        PsiElement newElement = GoElementFactory.createIdentifierFromText(e.getProject(), pendingSpec.activeSpecType().specType());
+        GinkgoSpec spec = GinkgoSpecs.getSpec(psiElement.getText());
+        PsiElement newElement = GoElementFactory.createIdentifierFromText(Objects.requireNonNull(e.getProject()), spec.getActiveName());
 
         ApplicationManager.getApplication().runWriteAction(() ->
             CommandProcessor.getInstance().runUndoTransparentAction(() ->

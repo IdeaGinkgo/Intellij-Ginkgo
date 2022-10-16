@@ -15,7 +15,7 @@ import java.util.*;
 
 public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer<GinkgoRunConfiguration> {
     public static final String GINKGO = "Ginkgo";
-    public static final String WHEN = "(when )?";
+    public static final String WHEN_REGEX = "(when )?";
     private final ConfigurationFactory ginkgoConfigurationFactory;
 
     public GinkgoRunConfigurationProducer() {
