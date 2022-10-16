@@ -2,8 +2,6 @@ package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.icons.GinkgoIcons;
 import com.github.idea.ginkgo.util.GinkgoUtil;
-import com.goide.GoTypes;
-import com.goide.psi.*;
 import com.intellij.execution.TestStateStorage;
 import com.intellij.execution.lineMarker.ExecutorAction;
 import com.intellij.execution.lineMarker.RunLineMarkerContributor;
@@ -18,10 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
-
-import static com.github.idea.ginkgo.GinkgoSpecs.*;
-
 
 public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     private static final Function<PsiElement, String> TOOLTIP_PROVIDER = element -> "Ginkgo Test";
@@ -36,21 +30,18 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
             return null;
         }
 
-        if (e.getNode().getElementType() == GoTypes.IDENTIFIER && e.getParent().getParent() instanceof GoCallExpr) {
-            GoCallExpr parent = (GoCallExpr) e.getParent().getParent();
-            List<GoExpression> args = parent.getArgumentList().getExpressionList();
-            String ginkgoSpec = parent.getExpression().getText();
-
-            if (GinkgoSpecs.isTableEntity(ginkgoSpec) && args.size() >= 2 && !(args.get(0) instanceof GoStringLiteral)) {
+        GinkgoExpression ginkgoExpression = GinkgoExpression.fromPsiElement(e);
+        if (ginkgoExpression.isValid()) {
+            if (ginkgoExpression.isDynamicTableEntry()) {
                 return new Info(GinkgoIcons.DISABLE_SPEC_ICON, TOOLTIP_WARNING, DISABLE_SPEC_ACTION);
             }
 
-            if (isGinkgoPendingSpec(ginkgoSpec)) {
+            if (!ginkgoExpression.isActive()) {
                 return new Info(GinkgoIcons.DISABLED_TEST_ICON, TOOLTIP_PROVIDER, ENABLE_SPEC_ACTION);
             }
 
-            if (isGinkgoActiveSpec(ginkgoSpec) && args.size() >= 2) {
-                return new Info(getTestIcon(e, ginkgoSpec), TOOLTIP_PROVIDER, getRunActions());
+            if (ginkgoExpression.isActive()) {
+                return new Info(getTestIcon(ginkgoExpression), TOOLTIP_PROVIDER, getRunActions());
             }
         }
 
@@ -65,18 +56,12 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     }
 
     @NotNull
-    private static Icon getTestIcon(@NotNull PsiElement e, String ginkgoSpec) {
-        Icon icon = AllIcons.RunConfigurations.TestState.Run;
-        if (getSpec(ginkgoSpec) == IT) {
-            List<String> specNames = GinkgoUtil.getSpecNames(e, false);
-            String specName = specNames.remove(specNames.size() - 1);
-            String specContext = String.join(" ", specNames);
-            String testUrl = "gotest://" + GinkgoRunConfigurationProducer.GINKGO + "#" + specContext + "/" + specName;
-            TestStateStorage.Record record = TestStateStorage.getInstance(e.getProject()).getState(testUrl);
-            if (record != null) {
-                icon = getTestStateIcon(record, false);
-            }
+    private static Icon getTestIcon(GinkgoExpression ginkgoExpression) {
+        TestStateStorage testStateStorage = TestStateStorage.getInstance(ginkgoExpression.getProject());
+        TestStateStorage.Record record = testStateStorage.getState(ginkgoExpression.getTestURL());
+        if (record != null) {
+            return getTestStateIcon(record, false);
         }
-        return icon;
+        return AllIcons.RunConfigurations.TestState.Run;
     }
 }

@@ -1,8 +1,6 @@
 package com.github.idea.ginkgo;
 
 
-import org.bouncycastle.util.Strings;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -55,40 +53,37 @@ public final class GinkgoSpecs {
         if (specType == null) {
             return INVALID;
         }
-
-        return GINKGO_SPECS.stream().filter(ginkgoSpec -> specType.equals(ginkgoSpec.getName())).findFirst().orElse(INVALID);
+        return GINKGO_SPECS.stream()
+                .filter(ginkgoSpec -> ginkgoSpec.withName(specType))
+                .findFirst()
+                .orElse(INVALID);
     }
 
     public static boolean isGinkgoActiveSpec(String specType) {
         if (specType == null) {
             return false;
         }
-
         return GINKGO_SPECS.stream()
                 .filter(GinkgoSpec::isActive)
-                .anyMatch(ginkgoSpec -> ginkgoSpec.getName().equals(trimPackageName(specType)));
+                .anyMatch(ginkgoSpec -> ginkgoSpec.withName(specType));
     }
 
     public static boolean isGinkgoPendingSpec(String specType) {
         if (specType == null) {
             return false;
         }
-
         return GINKGO_SPECS.stream()
                 .filter(GinkgoSpec::isInactive)
-                .anyMatch(ginkgoSpec -> ginkgoSpec.getName().equals(trimPackageName(specType)));
+                .anyMatch(ginkgoSpec -> ginkgoSpec.withName(specType));
     }
 
     public static boolean isTableEntity(String specType) {
-        return Stream.of(ENTRY, FENTRY).anyMatch(ginkgoSpec -> ginkgoSpec.getName().equals(trimPackageName(specType)));
+        return Stream.of(ENTRY, FENTRY)
+                .anyMatch(ginkgoSpec -> ginkgoSpec.withName(specType));
     }
 
     public static boolean isTablePendingEntity(String specType) {
-        return Stream.of(PENTRY, XENTRY).anyMatch(ginkgoSpec -> ginkgoSpec.getName().equals(trimPackageName(specType)));
-    }
-
-    private static String trimPackageName(String specType) {
-        String[] split = Strings.split(specType, '.');
-        return split[split.length - 1];
+        return Stream.of(PENTRY, XENTRY)
+                .anyMatch(ginkgoSpec -> ginkgoSpec.withName(specType));
     }
 }

@@ -30,4 +30,13 @@ public class GinkgoSpec {
     public boolean isInactive() {
         return !active;
     }
+
+    public boolean withName(String name) {
+        return this.name.equals(trimPackageName(name));
+    }
+
+    private String trimPackageName(String specType) {
+        String[] split = specType.split("\\.");
+        return split[split.length - 1];
+    }
 }
