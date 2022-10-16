@@ -1,6 +1,5 @@
 package com.github.idea.ginkgo.scope;
 
-import com.github.idea.ginkgo.GinkgoPendingSpecType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,13 +8,13 @@ import java.util.Arrays;
 public enum GinkgoScope {
     ALL("All Tests") {
         @Override
-        public GinkgoScopeView createView(Project project) {
+        public GinkgoScopeView createView(@NotNull Project project) {
             return new GinkgoAllTestsScopeView();
         }
     },
     FOCUS("Focus") {
         @Override
-        public GinkgoScopeView createView(Project project) {
+        public GinkgoScopeView createView(@NotNull Project project) {
             return new GinkgoFocusScopeView();
         }
     };
@@ -31,7 +30,7 @@ public enum GinkgoScope {
                 .stream(values())
                 .filter(l -> l.label.equals(label))
                 .findFirst()
-                .orElseThrow(() -> new EnumConstantNotPresentException(GinkgoPendingSpecType.class, label));
+                .orElseThrow(() -> new EnumConstantNotPresentException(GinkgoScope.class, label));
     }
 
     public String getLabel() {
