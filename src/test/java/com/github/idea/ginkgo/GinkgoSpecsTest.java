@@ -2,68 +2,67 @@ package com.github.idea.ginkgo;
 
 import org.junit.Test;
 
-import static com.github.idea.ginkgo.GinkgoSpecs.*;
 import static org.junit.Assert.*;
 
 public class GinkgoSpecsTest {
     @Test
     public void test_isGinkgoActiveFunction() {
-        assertTrue(isGinkgoActiveSpec("Describe"));
-        assertTrue(isGinkgoActiveSpec("DescribeTable"));
-        assertTrue(isGinkgoActiveSpec("Context"));
-        assertTrue(isGinkgoActiveSpec("When"));
-        assertTrue(isGinkgoActiveSpec("It"));
-        assertTrue(isGinkgoActiveSpec("Entry"));
-        assertTrue(isGinkgoActiveSpec("Specify"));
-        assertTrue(isGinkgoActiveSpec("FDescribe"));
-        assertTrue(isGinkgoActiveSpec("FDescribeTable"));
-        assertTrue(isGinkgoActiveSpec("FContext"));
-        assertTrue(isGinkgoActiveSpec("FWhen"));
-        assertTrue(isGinkgoActiveSpec("FIt"));
-        assertTrue(isGinkgoActiveSpec("FEntry"));
-        assertTrue(isGinkgoActiveSpec("FSpecify"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("Describe"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("DescribeTable"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("Context"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("When"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("It"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("Entry"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("Specify"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FDescribe"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FDescribeTable"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FContext"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FWhen"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FIt"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FEntry"));
+        assertTrue(GinkgoSpec.isGinkgoActiveSpec("FSpecify"));
     }
 
     @Test
     public void test_isGinkgoPendingFunction() {
-        assertTrue(isGinkgoPendingSpec("PDescribe"));
-        assertTrue(isGinkgoPendingSpec("PDescribeTable"));
-        assertTrue(isGinkgoPendingSpec("PContext"));
-        assertTrue(isGinkgoPendingSpec("PWhen"));
-        assertTrue(isGinkgoPendingSpec("PIt"));
-        assertTrue(isGinkgoPendingSpec("PEntry"));
-        assertTrue(isGinkgoPendingSpec("PSpecify"));
-        assertTrue(isGinkgoPendingSpec("XDescribe"));
-        assertTrue(isGinkgoPendingSpec("XDescribeTable"));
-        assertTrue(isGinkgoPendingSpec("XContext"));
-        assertTrue(isGinkgoPendingSpec("XWhen"));
-        assertTrue(isGinkgoPendingSpec("XIt"));
-        assertTrue(isGinkgoPendingSpec("XEntry"));
-        assertTrue(isGinkgoPendingSpec("XSpecify"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PDescribe"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PDescribeTable"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PContext"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PWhen"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PIt"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PEntry"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("PSpecify"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XDescribe"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XDescribeTable"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XContext"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XWhen"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XIt"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XEntry"));
+        assertTrue(GinkgoSpec.isGinkgoPendingSpec("XSpecify"));
     }
 
     @Test
     public void test_getSpec() {
-        assertEquals(DESCRIBE, getSpec("Describe"));
-        assertEquals(DESCRIBE_TABLE, getSpec("DescribeTable"));
-        assertEquals(CONTEXT, getSpec("Context"));
-        assertEquals(WHEN, getSpec("When"));
-        assertEquals(IT, getSpec("It"));
-        assertEquals(ENTRY, getSpec("Entry"));
-        assertEquals(SPECIFY, getSpec("Specify"));
-        assertEquals(PDESCRIBE, getSpec("PDescribe"));
-        assertEquals(PDESCRIBE_TABLE, getSpec("PDescribeTable"));
-        assertEquals(PCONTEXT, getSpec("PContext"));
-        assertEquals(PWHEN, getSpec("PWhen"));
-        assertEquals(PIT, getSpec("PIt"));
-        assertEquals(PENTRY, getSpec("PEntry"));
-        assertEquals(PSPECIFY, getSpec("PSpecify"));
-        assertEquals(XDESCRIBE, getSpec("XDescribe"));
-        assertEquals(XDESCRIBE_TABLE, getSpec("XDescribeTable"));
-        assertEquals(XCONTEXT, getSpec("XContext"));
-        assertEquals(XWHEN, getSpec("XWhen"));
-        assertEquals(XIT, getSpec("XIt"));
-        assertEquals(XENTRY, getSpec("XEntry"));
-        assertEquals(XSPECIFY, getSpec("XSpecify"));
+        assertEquals(GinkgoSpec.DESCRIBE, GinkgoSpec.getSpec("Describe"));
+        assertEquals(GinkgoSpec.DESCRIBE_TABLE, GinkgoSpec.getSpec("DescribeTable"));
+        assertEquals(GinkgoSpec.CONTEXT, GinkgoSpec.getSpec("Context"));
+        assertEquals(GinkgoSpec.WHEN, GinkgoSpec.getSpec("When"));
+        assertEquals(GinkgoSpec.IT, GinkgoSpec.getSpec("It"));
+        assertEquals(GinkgoSpec.ENTRY, GinkgoSpec.getSpec("Entry"));
+        assertEquals(GinkgoSpec.SPECIFY, GinkgoSpec.getSpec("Specify"));
+        assertEquals(GinkgoSpec.PDESCRIBE, GinkgoSpec.getSpec("PDescribe"));
+        assertEquals(GinkgoSpec.PDESCRIBE_TABLE, GinkgoSpec.getSpec("PDescribeTable"));
+        assertEquals(GinkgoSpec.PCONTEXT, GinkgoSpec.getSpec("PContext"));
+        assertEquals(GinkgoSpec.PWHEN, GinkgoSpec.getSpec("PWhen"));
+        assertEquals(GinkgoSpec.PIT, GinkgoSpec.getSpec("PIt"));
+        assertEquals(GinkgoSpec.PENTRY, GinkgoSpec.getSpec("PEntry"));
+        assertEquals(GinkgoSpec.PSPECIFY, GinkgoSpec.getSpec("PSpecify"));
+        assertEquals(GinkgoSpec.XDESCRIBE, GinkgoSpec.getSpec("XDescribe"));
+        assertEquals(GinkgoSpec.XDESCRIBE_TABLE, GinkgoSpec.getSpec("XDescribeTable"));
+        assertEquals(GinkgoSpec.XCONTEXT, GinkgoSpec.getSpec("XContext"));
+        assertEquals(GinkgoSpec.XWHEN, GinkgoSpec.getSpec("XWhen"));
+        assertEquals(GinkgoSpec.XIT, GinkgoSpec.getSpec("XIt"));
+        assertEquals(GinkgoSpec.XENTRY, GinkgoSpec.getSpec("XEntry"));
+        assertEquals(GinkgoSpec.XSPECIFY, GinkgoSpec.getSpec("XSpecify"));
     }
 }

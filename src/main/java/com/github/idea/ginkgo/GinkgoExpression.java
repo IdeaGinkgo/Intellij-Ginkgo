@@ -8,8 +8,8 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import static com.github.idea.ginkgo.GinkgoRunConfigurationProducer.GINKGO;
-import static com.github.idea.ginkgo.GinkgoSpecs.INVALID;
-import static com.github.idea.ginkgo.GinkgoSpecs.WHEN;
+import static com.github.idea.ginkgo.GinkgoSpec.INVALID;
+import static com.github.idea.ginkgo.GinkgoSpec.WHEN;
 import static com.github.idea.ginkgo.util.GinkgoUtil.escapeRegexCharacters;
 
 class GinkgoExpression {
@@ -34,11 +34,11 @@ class GinkgoExpression {
         }
 
         String specType = goCallExpr.getExpression().getText();
-        if (GinkgoSpecs.getSpec(specType) == INVALID) {
+        if (GinkgoSpec.getSpec(specType) == INVALID) {
             return INVALID_SPEC;
         }
 
-        return new GinkgoExpression(GinkgoSpecs.getSpec(specType), goCallExpr);
+        return new GinkgoExpression(GinkgoSpec.getSpec(specType), goCallExpr);
     }
 
     public GinkgoExpression(GinkgoSpec spec, GoCallExpr specDefinition) {
@@ -64,7 +64,7 @@ class GinkgoExpression {
     }
 
     public boolean isDynamicTableEntry() {
-        return GinkgoSpecs.isTableEntity(getSpecType()) && !(specDefinition.getArgumentList().getExpressionList().get(0) instanceof GoStringLiteral);
+        return GinkgoSpec.isTableEntity(getSpecType()) && !(specDefinition.getArgumentList().getExpressionList().get(0) instanceof GoStringLiteral);
     }
 
     public Project getProject() {
