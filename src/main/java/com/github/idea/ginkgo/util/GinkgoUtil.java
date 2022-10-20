@@ -1,7 +1,6 @@
 package com.github.idea.ginkgo.util;
 
 import com.github.idea.ginkgo.GinkgoRunConfigurationProducer;
-import com.github.idea.ginkgo.GinkgoTestSetupType;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoExpression;
 import com.goide.psi.GoFile;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static com.github.idea.ginkgo.GinkgoRunConfigurationProducer.WHEN_REGEX;
-import static com.github.idea.ginkgo.GinkgoSpecs.WHEN;
-import static com.github.idea.ginkgo.GinkgoSpecs.getSpec;
+import static com.github.idea.ginkgo.GinkgoSpec.WHEN;
+import static com.github.idea.ginkgo.GinkgoSpec.getSpec;
 
 public class GinkgoUtil {
     public static final Logger LOG = Logger.getInstance(GinkgoUtil.class);
@@ -58,10 +57,6 @@ public class GinkgoUtil {
 
     public static String escapeRegexCharacters(String specName) {
         return specName.replace("\"", "").replace("(", "\\(").replace(")", "\\)");
-    }
-
-    public static boolean isGinkgoTestSetup(String name) {
-        return Arrays.stream(GinkgoTestSetupType.class.getEnumConstants()).anyMatch(e -> e.testSetupType().equals(name));
     }
 
     public static boolean isGinkgoTestFile(PsiFile file) {

@@ -1,8 +1,6 @@
 package com.github.idea.ginkgo.actions;
 
 import com.github.idea.ginkgo.GinkgoSpec;
-import com.github.idea.ginkgo.GinkgoSpecs;
-import com.goide.psi.GoLiteral;
 import com.goide.psi.impl.GoElementFactory;
 import com.intellij.execution.Location;
 import com.intellij.icons.AllIcons;
@@ -24,7 +22,7 @@ public class DisableSpec extends AnAction {
         Location<?> location = e.getData(Location.DATA_KEY);
         assert location != null;
         PsiElement psiElement = location.getPsiElement();
-        GinkgoSpec spec = GinkgoSpecs.getSpec(psiElement.getText());
+        GinkgoSpec spec = GinkgoSpec.getSpec(psiElement.getText());
         PsiElement newElement = GoElementFactory.createIdentifierFromText(psiElement.getProject(), spec.getDisabledName());
 
         ApplicationManager.getApplication().runWriteAction(() ->
