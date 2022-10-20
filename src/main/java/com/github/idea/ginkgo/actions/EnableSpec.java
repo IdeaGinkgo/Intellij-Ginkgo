@@ -12,8 +12,6 @@ import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class EnableSpec extends AnAction {
 
     public EnableSpec() {
@@ -26,7 +24,7 @@ public class EnableSpec extends AnAction {
         assert location != null;
         PsiElement psiElement = location.getPsiElement();
         GinkgoSpec spec = GinkgoSpecs.getSpec(psiElement.getText());
-        PsiElement newElement = GoElementFactory.createIdentifierFromText(Objects.requireNonNull(e.getProject()), spec.getActiveName());
+        PsiElement newElement = GoElementFactory.createIdentifierFromText(psiElement.getProject(), spec.getActiveName());
 
         ApplicationManager.getApplication().runWriteAction(() ->
             CommandProcessor.getInstance().runUndoTransparentAction(() ->

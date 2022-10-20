@@ -104,10 +104,9 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
 
     private LeafPsiElement getLeafPsiElement(String filePath, String spec) {
         GoFile file = (GoFile) myFixture.configureByFile(filePath);
-        LeafPsiElement leafPsiElement = PsiTreeUtil.findChildrenOfType(file, LeafPsiElement.class).stream()
+        return PsiTreeUtil.findChildrenOfType(file, LeafPsiElement.class).stream()
                 .filter(e -> e.getText().equals(spec))
                 .findFirst()
-                .orElseThrow(() -> new AssertionFailedError(String.format("Ginkgo Expression Not Found")));
-        return leafPsiElement;
+                .orElseThrow(() -> new AssertionFailedError("Ginkgo Expression Not Found"));
     }
 }
