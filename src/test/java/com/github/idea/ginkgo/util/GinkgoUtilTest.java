@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static com.goide.psi.impl.manipulator.GoStringManipulator.unquote;
+
 public class GinkgoUtilTest extends BasePlatformTestCase {
 
     @Override
@@ -30,6 +32,11 @@ public class GinkgoUtilTest extends BasePlatformTestCase {
         assertSpecNames("focus_expression_when.go", "Book Categorizing book length (when )?When Test should be a short story");
         assertSpecNames("focus_expression_table.go", "Book Category Table Novel");
         assertSpecNames("focus_expression_special_characters.go", "Book Categorizing book length (when )?When Test should be a \\(short\\) story");
+    }
+
+    @Test
+    public void testUnquote() {
+        assertEquals("test", unquote("\"test\""));
     }
 
     private void assertSpecNames(String testFile, String expectedFocusExpression) {

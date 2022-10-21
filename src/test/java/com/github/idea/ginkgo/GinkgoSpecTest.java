@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GinkgoSpecsTest {
+public class GinkgoSpecTest {
     @Test
     public void test_isGinkgoActiveFunction() {
         assertTrue(GinkgoSpec.isGinkgoActiveSpec("Describe"));
@@ -21,6 +21,7 @@ public class GinkgoSpecsTest {
         assertTrue(GinkgoSpec.isGinkgoActiveSpec("FIt"));
         assertTrue(GinkgoSpec.isGinkgoActiveSpec("FEntry"));
         assertTrue(GinkgoSpec.isGinkgoActiveSpec("FSpecify"));
+        assertFalse(GinkgoSpec.isGinkgoActiveSpec(null));
     }
 
     @Test
@@ -39,6 +40,7 @@ public class GinkgoSpecsTest {
         assertTrue(GinkgoSpec.isGinkgoPendingSpec("XIt"));
         assertTrue(GinkgoSpec.isGinkgoPendingSpec("XEntry"));
         assertTrue(GinkgoSpec.isGinkgoPendingSpec("XSpecify"));
+        assertFalse(GinkgoSpec.isGinkgoPendingSpec(null));
     }
 
     @Test
@@ -64,5 +66,19 @@ public class GinkgoSpecsTest {
         assertEquals(GinkgoSpec.XIT, GinkgoSpec.getSpec("XIt"));
         assertEquals(GinkgoSpec.XENTRY, GinkgoSpec.getSpec("XEntry"));
         assertEquals(GinkgoSpec.XSPECIFY, GinkgoSpec.getSpec("XSpecify"));
+        assertEquals(GinkgoSpec.INVALID, GinkgoSpec.getSpec("Invalid"));
+        assertEquals(GinkgoSpec.INVALID, GinkgoSpec.getSpec(null));
+    }
+
+    @Test
+    public void getActiveName() {
+        assertEquals("It", GinkgoSpec.IT.getActiveName());
+        assertEquals("It", GinkgoSpec.PIT.getActiveName());
+    }
+
+    @Test
+    public void getDisabledName() {
+        assertEquals("PIt", GinkgoSpec.IT.getDisabledName());
+        assertEquals("PIt", GinkgoSpec.PIT.getDisabledName());
     }
 }

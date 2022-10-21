@@ -8,7 +8,9 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>org.jetbrains.plugins.go</depends>
 
+
     <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable id="GinkgoConfiguration" groupId="language" instance="com.github.idea.ginkgo.config.GinkgoSettingsConfigurable" displayName="Ginkgo"/>
         <programRunner implementation="com.github.idea.ginkgo.execution.GinkgoRunner"/>
         <fileType name="Ginkgo"
                   implementationClass="com.github.idea.ginkgo.file.GinkgoFileType"
@@ -21,6 +23,9 @@
         <runConfigurationProducer id="GinkgoRunConfigurationProducer"
                                   implementation="com.github.idea.ginkgo.GinkgoRunConfigurationProducer"
                                   order="after GoApplicationRunConfigurationProducer"/>
+        <lang.psiStructureViewFactory language="go"
+                                      implementationClass="com.github.idea.ginkgo.structureView.GinkgoStructureViewFactory"
+                                      order="first"/> <!-- needs to be before com.goide.tree.GoStructureViewFactory, but it has no id -->
     </extensions>
     <actions>
         <action id="GinkgoEnableSpec" class="com.github.idea.ginkgo.actions.EnableSpec"/>
