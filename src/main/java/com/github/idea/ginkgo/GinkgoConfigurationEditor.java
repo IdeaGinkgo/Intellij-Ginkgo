@@ -49,7 +49,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
     }
 
     /**
-     * Resets the view able editor the the values from a GinkgoRunConfiguration. config -> editor.
+     * Resets the view able editor the values from a GinkgoRunConfiguration. config -> editor.
      *
      * @param config
      */

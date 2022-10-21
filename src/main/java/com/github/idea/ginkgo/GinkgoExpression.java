@@ -3,16 +3,18 @@ package com.github.idea.ginkgo;
 import com.goide.GoTypes;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoStringLiteral;
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.projectView.PresentationData;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import static com.github.idea.ginkgo.GinkgoRunConfigurationProducer.GINKGO;
-import static com.github.idea.ginkgo.GinkgoSpec.INVALID;
-import static com.github.idea.ginkgo.GinkgoSpec.WHEN;
+import static com.github.idea.ginkgo.GinkgoSpec.*;
 import static com.github.idea.ginkgo.util.GinkgoUtil.escapeRegexCharacters;
+import static com.goide.psi.impl.manipulator.GoStringManipulator.unquote;
 
-class GinkgoExpression {
+public class GinkgoExpression {
     public static final String WHEN_REGEX = "(when )?";
     public static final GinkgoExpression INVALID_SPEC = new GinkgoExpression(INVALID, null);
     private final GinkgoSpec ginkgoSpec;
@@ -56,6 +58,15 @@ class GinkgoExpression {
 
     public String getSpecType() {
         return specDefinition.getExpression().getText();
+    }
+
+    public String getFullName() {
+        String testName = unquote(specDefinition.getArgumentList().getExpressionList().get(0).getText());
+        return ginkgoSpec != CONTEXT ? specDefinition.getExpression().getText() + " " + testName: testName;
+    }
+
+    public PresentationData getPresentationData() {
+        return new PresentationData(getFullName(), "", AllIcons.RunConfigurations.TestState.Run, null);
     }
 
     public String getSpecName() {
