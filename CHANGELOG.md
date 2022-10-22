@@ -3,8 +3,14 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Added
+- Ginkgo Structure View
 ### Chore
 - Bump intellij gradle plugin to 1.9.0
+- Refactor Enums
+- Refactor RunLineMarker
+- Refactor BreadCrumbs
+- Add RunLineMarkerTests
 
 ## [0.6.5]
 ### Fixed
