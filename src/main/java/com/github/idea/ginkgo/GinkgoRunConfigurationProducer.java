@@ -25,7 +25,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
 
     @Override
     protected boolean setupConfigurationFromContext(@NotNull GinkgoRunConfiguration configuration, @NotNull ConfigurationContext context, @NotNull Ref<PsiElement> sourceElement) {
-        if (context.getPsiLocation() != null && context.getPsiLocation().getParent() != null) {
+        if (context.getPsiLocation() == null || context.getPsiLocation().getParent() == null) {
             return false;
         }
 
