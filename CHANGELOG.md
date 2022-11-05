@@ -11,6 +11,8 @@
 - Refactor RunLineMarker
 - Refactor BreadCrumbs
 - Add RunLineMarkerTests
+### Fixed
+- NPE in Run Configuration Producer
 
 ## [0.6.5]
 ### Fixed
