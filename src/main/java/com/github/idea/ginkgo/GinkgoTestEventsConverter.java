@@ -52,15 +52,9 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private boolean inBeforeSuite;
     private boolean specCompleted = true;
     private boolean ginkgoCLIException;
-    public FileWriter fileWriter;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
-        try {
-            fileWriter = new FileWriter("ginkgo-output-"+LocalDate.now());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -87,13 +81,6 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
     @Override
     protected int processLine(@NotNull String line, int start, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
-        try {
-            fileWriter.write(outputType + " | " + line + "\n");
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         Matcher matcher;
         if (line.startsWith("flag provided but not defined:") || line.startsWith("=== RUN")) {
             startTest("Ginkgo CLI Incompatible", outputType, visitor);
