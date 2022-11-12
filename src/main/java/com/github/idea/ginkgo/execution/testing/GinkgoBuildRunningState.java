@@ -36,19 +36,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class GinkgoBuildRunningState implements RunProfileState {
+    public static final String COMPLIATION_FAILED = "go.execution.compilation.failed.notification.title";
+    public static final String FILE_CREATION_FAILED = "go.execution.cannot.create.temp.output.file.error";
     private final ExecutionEnvironment environment;
     private final Project project;
     private final GinkgoRunConfiguration configuration;
     private final AsyncPromise<RunContentDescriptor> buildingPromise;
-    private VirtualFile sdkRoot;
+    private final VirtualFile sdkRoot;
     private File outputFile;
     private String buildCommand;
 
-
-    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration, AsyncPromise<RunContentDescriptor> buildingPromise) {
+    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env,  AsyncPromise<RunContentDescriptor> buildingPromise, GinkgoRunningState runningState) {
         this.environment = env;
-        this.project = project;
-        this.configuration = configuration;
+        this.project = runningState.getProject();
+        this.configuration =  runningState.getConfiguration();
         this.buildingPromise = buildingPromise;
         this.sdkRoot = GoSdkService.getInstance(project).getSdk(null).getSdkRoot();
     }
@@ -81,7 +82,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
             @Override
             public void processTerminated(@NotNull ProcessEvent event) {
                 if (event.getExitCode() != 0) {
-                    buildingPromise.setError(new ExecutionException(GoBundle.message("go.execution.compilation.failed.notification.title", new Object[0])));
+                    buildingPromise.setError(new ExecutionException(GoBundle.message(COMPLIATION_FAILED)));
                 }
                 buildingPromise.setResult(environment.getContentToReuse());
             }
@@ -101,7 +102,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
         try {
             return FileUtil.createTempFile(outputDirectory, "", binaryName, true);
         } catch (IOException ioException) {
-            throw new ExecutionException(GoBundle.message("go.execution.cannot.create.temp.output.file.error", new Object[0]), ioException);
+            throw new ExecutionException(GoBundle.message(FILE_CREATION_FAILED), ioException);
         }
     }
 
@@ -114,7 +115,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
     @NotNull
     private Map<String, String> getProjectEnvironmentExtensions() {
         Map<String, String> environmentFromExtensions = new HashMap<>();
-        Iterator goExtensionIterator = GoExecutorExtension.EP_NAME.getExtensionList().iterator();
+        Iterator<GoExecutorExtension> goExtensionIterator = GoExecutorExtension.EP_NAME.getExtensionList().iterator();
 
         while (goExtensionIterator.hasNext()) {
             GoExecutorExtension extension = (GoExecutorExtension) goExtensionIterator.next();
@@ -158,7 +159,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
         commandList.add("all=-N -l");
         commandList.add(".");
 
-        return new GeneralCommandLine(commandList.stream().toArray(String[]::new));
+        return new GeneralCommandLine(commandList.toArray(new String[0]));
     }
 
     public File getOutputFile() {
