@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Chore
+- Refactor Ginkgo Runner for readability
+
 ## [0.9.0] - 2023-01-07
 
 ### Added
