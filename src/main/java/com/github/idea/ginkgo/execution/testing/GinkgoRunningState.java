@@ -51,7 +51,7 @@ public class GinkgoRunningState implements RunProfileState {
     private final Project project;
     private final GinkgoRunConfiguration configuration;
     private InetSocketAddress myDebugAddress;
-    private VirtualFile sdkRoot;
+    private final VirtualFile sdkRoot;
     private File outputFile;
     private String buildCommand;
     @Nullable
@@ -273,6 +273,10 @@ public class GinkgoRunningState implements RunProfileState {
 
     public GinkgoRunConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public boolean isPackageLevel() {
+        return configuration.getOptions().getGinkgoScope() != GinkgoScope.ALL;
     }
 
     public File getOutputFile() {
