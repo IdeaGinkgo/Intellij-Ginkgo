@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Add functionality to Ginkgo Expression
+
+## [0.7.0]
 ### Added
 - Ginkgo Structure View
 ### Chore

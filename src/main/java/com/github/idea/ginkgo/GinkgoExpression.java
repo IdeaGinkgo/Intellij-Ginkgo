@@ -9,6 +9,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.github.idea.ginkgo.GinkgoRunConfigurationProducer.GINKGO;
 import static com.github.idea.ginkgo.GinkgoSpec.*;
 import static com.github.idea.ginkgo.util.GinkgoUtil.escapeRegexCharacters;
@@ -62,7 +65,7 @@ public class GinkgoExpression {
 
     public String getFullName() {
         String testName = unquote(specDefinition.getArgumentList().getExpressionList().get(0).getText());
-        return ginkgoSpec != CONTEXT ? specDefinition.getExpression().getText() + " " + testName: testName;
+        return ginkgoSpec != CONTEXT ? specDefinition.getExpression().getText() + " " + testName : testName;
     }
 
     public PresentationData getPresentationData() {
@@ -80,6 +83,17 @@ public class GinkgoExpression {
 
     public Project getProject() {
         return specDefinition.getProject();
+    }
+
+    public List<String> getSpecLocation() {
+        GinkgoExpression parent = getParentSpec();
+        List<String> specLocations = new ArrayList<>();
+        if (parent != null) {
+            specLocations.addAll(parent.getSpecLocation());
+        }
+        specLocations.add(getSpecName());
+
+        return specLocations;
     }
 
     public String getFocusExpression() {

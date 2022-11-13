@@ -48,8 +48,9 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
 
     private void createsConfigurationWithFocusExpression(GoFile file, String spec, String focusExpression) {
         GinkgoRunConfiguration config = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
-        ConfigurationContext context = new ConfigurationContext(getSpecElement(file, spec));
-        boolean result = ginkgoRunConfigurationProducer.setupConfigurationFromContext(config, context, new Ref<>());
+        PsiElement specElement = getSpecElement(file, spec);
+        ConfigurationContext context = new ConfigurationContext(specElement);
+        boolean result = ginkgoRunConfigurationProducer.setupConfigurationFromContext(config, context, new Ref<>(specElement));
 
         assertTrue(result);
         assertEquals(focusExpression, config.getOptions().getFocusTestExpression());

@@ -9,6 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 @RunWith(JUnit4.class)
 public class GinkgoExpressionTest extends BasePlatformTestCase {
     @Override
@@ -30,6 +33,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("Describe", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo", ginkgoExpression.getFocusExpression());
+        assertEquals(Collections.singletonList("Ginkgo"), ginkgoExpression.getSpecLocation());
     }
 
     @Test
@@ -41,6 +45,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("Context", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext"), ginkgoExpression.getSpecLocation());
     }
 
     @Test
@@ -52,6 +57,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("It", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext it should be true", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "it should be true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/it should be true", ginkgoExpression.getTestURL());
     }
 
@@ -64,6 +70,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("When", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext (when )?when true", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "when true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/when true", ginkgoExpression.getTestURL());
     }
 
@@ -76,6 +83,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("Specify", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext specify true", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "specify true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/specify true", ginkgoExpression.getTestURL());
     }
 
@@ -88,6 +96,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertTrue(ginkgoExpression.isActive());
         assertEquals("DescribeTable", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext Table", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "Table"), ginkgoExpression.getSpecLocation());
     }
 
     @Test
@@ -99,6 +108,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertFalse(ginkgoExpression.isDynamicTableEntry());
         assertEquals("Entry", ginkgoExpression.getSpecType());
         assertEquals("Ginkgo Describe MultipleContext Table true", ginkgoExpression.getFocusExpression());
+        assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "Table", "true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext Table/true", ginkgoExpression.getTestURL());
     }
 
