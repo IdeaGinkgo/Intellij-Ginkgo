@@ -25,6 +25,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private static final Pattern START_SUITE_BLOCK = Pattern.compile("Will run [0-9]* of [0-9]* specs");
     private static final Pattern END_SUITE_BLOCK = Pattern.compile("Ran [0-9]* of [0-9]* Specs in [0-9]*\\.?[0-9]* seconds");
     private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
+    private static final Pattern START_SKIP_BLOCK = Pattern.compile("S \\[SKIPPED\\]");;
     private static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
     private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
     private static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}[\\/-]\\d{2}[\\/-]\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(.*)");
@@ -52,6 +53,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     private boolean inBeforeSuite;
     private boolean specCompleted = true;
     private boolean ginkgoCLIException;
+    private boolean inSkipBlock;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
@@ -156,6 +158,15 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
             return processPendingSpecBlock(line, outputType, visitor);
         }
 
+        if(START_SKIP_BLOCK.matcher(line).find(start)) {
+            inSkipBlock=true;
+            return line.length();
+        }
+
+        if(inSkipBlock && StringUtils.isNotBlank(line)) {
+            return processSkipSpecBlock(line);
+        }
+
         if (inSuiteBlock && StringUtils.isNotBlank(line)) {
             if (line.startsWith(SPEC_SEPARATOR) && specCompleted) {
                 processOutput(line, outputType, visitor);
@@ -255,6 +266,23 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
         addPendingSpecName(line);
         pendingTestOutputBuffer.append(line);
+        return line.length();
+    }
+
+
+    /**
+     * Processes skip spec output. Swallows SKIPPED Spec output introduced in ginkgo 2.5
+     *
+     * @param line
+     * @return
+     * @throws ParseException
+     */
+    private int processSkipSpecBlock(@NotNull String line) {
+        if (line.startsWith(SPEC_SEPARATOR)) {
+            inSkipBlock = false;
+            return line.length();
+        }
+
         return line.length();
     }
 
