@@ -41,6 +41,9 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     public static final String PANIC_PREFIX_2 = "•! Panic";
     public static final String PANIC_PREFIX_3 = "+! [PANICKED]";
     public static final String PANIC_PREFIX_4 = "•! [PANICKED]";
+    public static final String PANIC_PREFIX_5 = "• [PANICKED]";
+    public static final String PANIC_PREFIX_6 = "+ [PANICKED]";
+
     private Stack<String> suites = new Stack<>();
     private boolean inSuiteBlock;
     private String specContext;
@@ -217,7 +220,8 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
     private static boolean isPanic(@NotNull String line) {
         return line.startsWith(PANIC_PREFIX_1) || line.startsWith(PANIC_PREFIX_2)
-                || line.startsWith(PANIC_PREFIX_3) || line.startsWith(PANIC_PREFIX_4);
+                || line.startsWith(PANIC_PREFIX_3) || line.startsWith(PANIC_PREFIX_4)
+                || line.startsWith(PANIC_PREFIX_5) || line.startsWith(PANIC_PREFIX_6);
     }
 
     private int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
