@@ -5,6 +5,8 @@
 ## [Unreleased]
 ### Chore
 - Add functionality to Ginkgo Expression
+### Fixed
+- Ginkgo 2.5 test output parsing
 
 ## [0.7.0]
 ### Added
