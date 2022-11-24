@@ -87,6 +87,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
         ginkgoRunConfigurationOptions.setGoToolOptions(goToolOptions.getText());
         ginkgoRunConfigurationOptions.setGinkgoScope(selectedScope);
         ginkgoRunConfigurationOptions.setTestNames(myOptions.getTestNames());
+        ginkgoRunConfigurationOptions.setRemoteTarget(myOptions.getRemoteTarget());
 
         getScopeView(selectedScope).applyTo(ginkgoRunConfigurationOptions);
 
