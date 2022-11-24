@@ -3,16 +3,13 @@ package com.github.idea.ginkgo.execution.testing;
 import com.github.idea.ginkgo.GinkgoConsoleProperties;
 import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.GinkgoRunConfigurationOptions;
-import com.github.idea.ginkgo.config.GinkgoSettings;
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.GoEnvironmentUtil;
 import com.goide.dlv.DlvVm;
 import com.goide.execution.GoRunUtil;
 import com.goide.execution.extension.GoExecutorExtension;
-import com.goide.execution.target.GoLanguageRuntimeConfiguration;
 import com.goide.sdk.GoSdkService;
 import com.goide.sdk.GoSdkUtil;
-import com.goide.util.GoExecutor;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -27,7 +24,6 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.target.*;
 import com.intellij.execution.target.local.LocalTargetEnvironmentRequest;
 import com.intellij.execution.target.value.TargetValue;
-import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
@@ -54,7 +50,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState {
+public class GinkgoRemoteRunningState implements TargetEnvironmentAwareRunProfileState {
     private final ExecutionEnvironment environment;
     private final Project project;
     private final GinkgoRunConfiguration configuration;
@@ -68,7 +64,7 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
     private TargetProgressIndicator targetProgressIndicator;
 
 
-    public GinkgoRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration) {
+    public GinkgoRemoteRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration) {
         this.environment = env;
         this.project = project;
         this.configuration = configuration;
@@ -90,12 +86,8 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
         SMTRunnerConsoleView consoleView = new SMTRunnerConsoleView(consoleProperties);
         SMTestRunnerConnectionUtil.initConsoleView(consoleView, "Ginkgo");
         consoleView.attachToProcess(processHandler);
-        AbstractRerunFailedTestsAction rerunAction = consoleProperties.createRerunFailedTestsAction(consoleView);
-        DefaultExecutionResult defaultExecutionResult = new DefaultExecutionResult(consoleView, processHandler);
-        if (rerunAction != null) {
-            defaultExecutionResult.setRestartActions(rerunAction);
-        }
-        return defaultExecutionResult;
+
+        return new DefaultExecutionResult(consoleView, processHandler);
     }
 
 
@@ -111,22 +103,13 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
 
     private KillableColoredProcessHandler remoteRunProcessHandler() throws ExecutionException {
         GinkgoRunConfigurationOptions runOptions = configuration.getOptions();
-        GoLanguageRuntimeConfiguration runTimeConfig = targetEnvironmentRequest.getConfiguration().getRuntimes().findByType(GoLanguageRuntimeConfiguration.class);
-        TargetEnvironment environment = targetEnvironmentRequest.prepareEnvironment(targetProgressIndicator);
-
-        GoExecutor executor = GoExecutor.in(getProject(), null)
-                .withTargetEnvironmentRequest(targetEnvironmentRequest)
-                .withWorkDirectory(runOptions.getWorkingDir())
-                .withWorkDirectory(targetEnvironmentRequest.getProjectPathOnTarget())
-                .withExePath(runTimeConfig.getGoBinaryPath());
-
-        TargetedCommandLineBuilder commandLineBuilder = executor.createCommandLine(targetEnvironmentRequest);
-        commandLineBuilder.addParameter("test");
-        commandLineBuilder.addParameter("-ginkgo.v");
-        commandLineBuilder.addParameters(runOptions.getGinkgoAdditionalOptionsList());
-
+        TargetedCommandLineBuilder targetedCommandLineBuilder = new TargetedCommandLineBuilder(targetEnvironmentRequest);
         ProgressIndicator indicator = ObjectUtils.notNull(ProgressManager.getInstance().getProgressIndicator(), new EmptyProgressIndicator());
-        TargetedCommandLine commandLine = commandLineBuilder.build();
+        TargetEnvironment environment = targetEnvironmentRequest.prepareEnvironment(targetProgressIndicator);
+        targetedCommandLineBuilder.setWorkingDirectory(targetEnvironmentRequest.getProjectPathOnTarget());
+        targetedCommandLineBuilder.setExePath("env");
+
+        TargetedCommandLine commandLine = targetedCommandLineBuilder.build();
         Process process = environment.createProcess(commandLine, indicator);
         String commandRepresentation = commandLine.getCommandPresentation(environment);
 
@@ -241,23 +224,9 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
 
     private GeneralCommandLine createCommandLine(GinkgoRunConfigurationOptions runOptions) {
         List<String> commandList = new ArrayList<>();
-        if (!GinkgoSettings.getInstance().isUseGoToolsGinkgoEnabled()) {
-            commandList.add(runOptions.getGinkgoExecutable());
-        } else {
-            commandList.add(getGoExecutablePath());
-            commandList.add("run");
-            commandList.add("github.com/onsi/ginkgo/v2/ginkgo");
-        }
-
-        if (!runOptions.getGinkgoAdditionalOptionsList().contains("-vv")) {
-            commandList.add("-v");
-        }
-        commandList.addAll(runOptions.getGoToolOptionsList());
+        commandList.add(runOptions.getGinkgoExecutable());
+        commandList.add("-v");
         commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
-
-        if (runOptions.isRerun()) {
-            commandList.add("-r");
-        }
 
         switch (runOptions.getGinkgoScope()) {
             case ALL:
@@ -375,11 +344,5 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
     @Override
     public void handleCreatedTargetEnvironment(@NotNull TargetEnvironment targetEnvironment, @NotNull TargetProgressIndicator targetProgressIndicator) throws ExecutionException {
 
-    }
-
-    private String getGoExecutablePath() {
-        String defaultExecutable = GoEnvironmentUtil.getBinaryFileNameForPath("go");
-        VirtualFile executable = GoSdkUtil.getGoExecutable(sdkRoot);
-        return executable != null ? executable.getPath() : defaultExecutable;
     }
 }

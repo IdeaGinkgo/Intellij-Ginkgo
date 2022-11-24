@@ -27,6 +27,7 @@ public class GinkgoSerializationUtil {
     private static final String TEST_NAMES = "test-names";
     private static final String TEST_NAME = "test-name";
     private static final String PACKAGE_NAME = "package-name";
+    private static final String REMOTE_TARGET = "remote-target";
 
     private GinkgoSerializationUtil() {
     }
@@ -41,6 +42,7 @@ public class GinkgoSerializationUtil {
         write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().name());
         write(element, FOCUS_EXPRESSION, runSettings.getFocusTestExpression());
         write(element, PACKAGE_NAME, runSettings.getPackageName());
+        write(element, REMOTE_TARGET, runSettings.getRemoteTarget());
         writeTestNames(element, runSettings.getTestNames());
     }
 
@@ -76,6 +78,7 @@ public class GinkgoSerializationUtil {
         ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element));
         ginkgoRunConfigurationOptions.setFocusTestExpression(read(element, FOCUS_EXPRESSION));
         ginkgoRunConfigurationOptions.setPackageName(read(element, PACKAGE_NAME));
+        ginkgoRunConfigurationOptions.setRemoteTarget(read(element, REMOTE_TARGET));
         ginkgoRunConfigurationOptions.setTestNames(readTestNames(element));
 
         return ginkgoRunConfigurationOptions;

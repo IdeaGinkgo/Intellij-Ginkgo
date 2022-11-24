@@ -36,7 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class GinkgoBuildRunningState implements RunProfileState {
-    public static final String COMPLIATION_FAILED = "go.execution.compilation.failed.notification.title";
+    public static final String COMPLICATION_FAILED = "go.execution.compilation.failed.notification.title";
     public static final String FILE_CREATION_FAILED = "go.execution.cannot.create.temp.output.file.error";
     private final ExecutionEnvironment environment;
     private final Project project;
@@ -46,17 +46,17 @@ public class GinkgoBuildRunningState implements RunProfileState {
     private File outputFile;
     private String buildCommand;
 
-    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env,  AsyncPromise<RunContentDescriptor> buildingPromise, GinkgoRunningState runningState) {
+    public GinkgoBuildRunningState(@NotNull ExecutionEnvironment env, AsyncPromise<RunContentDescriptor> buildingPromise, GinkgoRunningState runningState) {
         this.environment = env;
         this.project = runningState.getProject();
-        this.configuration =  runningState.getConfiguration();
+        this.configuration = runningState.getConfiguration();
         this.buildingPromise = buildingPromise;
         this.sdkRoot = GoSdkService.getInstance(project).getSdk(null).getSdkRoot();
     }
 
     @Override
     @Nullable
-    public ExecutionResult execute(Executor executor, ProgramRunner<?> runner) throws ExecutionException {
+    public ExecutionResult execute(Executor executor, @NotNull ProgramRunner<?> runner) throws ExecutionException {
         return new DefaultExecutionResult(startBuildProcess());
     }
 
@@ -82,7 +82,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
             @Override
             public void processTerminated(@NotNull ProcessEvent event) {
                 if (event.getExitCode() != 0) {
-                    buildingPromise.setError(new ExecutionException(GoBundle.message(COMPLIATION_FAILED)));
+                    buildingPromise.setError(new ExecutionException(GoBundle.message(COMPLICATION_FAILED)));
                 }
                 buildingPromise.setResult(environment.getContentToReuse());
             }
@@ -92,8 +92,8 @@ public class GinkgoBuildRunningState implements RunProfileState {
     }
 
     /**
-     * @param packageName   Name of the go package to be compiled for test
-     * @return              Temp compiled test file target
+     * @param packageName Name of the go package to be compiled for test
+     * @return Temp compiled test file target
      * @throws ExecutionException
      */
     private @NotNull File getOutputFile(@NotNull String packageName) throws ExecutionException {
