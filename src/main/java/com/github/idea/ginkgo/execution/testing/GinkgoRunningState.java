@@ -16,22 +16,26 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessOutputTypes;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
+import com.intellij.execution.target.*;
 import com.intellij.execution.target.value.TargetValue;
 import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
+import com.intellij.openapi.progress.EmptyProgressIndicator;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Couple;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.EnvironmentUtil;
+import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.NetUtils;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +51,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class GinkgoRunningState implements RunProfileState {
+public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState {
     private final ExecutionEnvironment environment;
     private final Project project;
     private final GinkgoRunConfiguration configuration;
@@ -57,6 +61,8 @@ public class GinkgoRunningState implements RunProfileState {
     private String buildCommand;
     @Nullable
     private volatile TargetValue<Integer> myDebugPortValue;
+    private TargetEnvironmentRequest targetEnvironmentRequest;
+    private TargetProgressIndicator targetProgressIndicator;
 
 
     public GinkgoRunningState(@NotNull ExecutionEnvironment env, @Nullable Project project, @NotNull GinkgoRunConfiguration configuration) {
@@ -97,18 +103,46 @@ public class GinkgoRunningState implements RunProfileState {
         Couple<String> pathEntry = updatePath(EnvironmentUtil.getEnvironmentMap());
         Map<String, String> environmentFromExtensions = getProjectEnvironmentExtensions();
 
-        GeneralCommandLine commandLine = createCommandLine(runOptions)
-                .withEnvironment(pathEntry.first, pathEntry.second)
-                .withEnvironment("GOROOT", sdkRoot.getPath())
-                .withEnvironment(runOptions.getEnvData().getEnvs())
-                .withEnvironment(environmentFromExtensions)
-                .withWorkDirectory(runOptions.getWorkingDir())
-                .withCharset(StandardCharsets.UTF_8);
+//        final GoExecutor executor = this.createRunExecutor().withParameterString(this.getRunParameters());
+//        TargetEnvironmentRequest request = executor.getTargetEnvironmentRequest();
+//        ProgressIndicator indicator = (ProgressIndicator) ObjectUtils.notNull(ProgressManager.getInstance().getProgressIndicator(), new EmptyProgressIndicator());
+//        TargetEnvironment environment = executor.prepareRemoteEnvironment(request, indicator);
+//        TargetedCommandLineBuilder commandLineBuilder = executor.createCommandLine(request);
+        TargetedCommandLineBuilder targetedCommandLineBuilder = new TargetedCommandLineBuilder(targetEnvironmentRequest);
+        ProgressIndicator indicator = ObjectUtils.notNull(ProgressManager.getInstance().getProgressIndicator(), new EmptyProgressIndicator());
+        TargetEnvironment environment = targetEnvironmentRequest.prepareEnvironment(targetProgressIndicator);
+        targetedCommandLineBuilder.setExePath("env");
+        targetedCommandLineBuilder.setWorkingDirectory("/mnt/i/Users/megat/workspace/Intellij-Ginkgo");
+        targetedCommandLineBuilder.addEnvironmentVariable(pathEntry.first, pathEntry.second);
+        targetedCommandLineBuilder.addEnvironmentVariable("GOROOT", sdkRoot.getPath());
+        runOptions.getEnvData().getEnvs().forEach(targetedCommandLineBuilder::addEnvironmentVariable);
+        environmentFromExtensions.forEach(targetedCommandLineBuilder::addEnvironmentVariable);
+        targetedCommandLineBuilder.setCharset(StandardCharsets.UTF_8);
 
-        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine) {
+        TargetedCommandLine commandLine = targetedCommandLineBuilder.build();
+        Process process = environment.createProcess(commandLine, indicator);
+        String commandRepresentation = commandLine.getCommandPresentation(environment);
+
+//        GeneralCommandLine commandLine = createCommandLine(runOptions)
+//                .withEnvironment(pathEntry.first, pathEntry.second)
+//                .withEnvironment("GOROOT", sdkRoot.getPath())
+//                .withEnvironment(runOptions.getEnvData().getEnvs())
+//                .withEnvironment(environmentFromExtensions)
+//                .withWorkDirectory(runOptions.getWorkingDir())
+//                .withCharset(StandardCharsets.UTF_8);
+
+        KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(process, commandRepresentation) {
             @Override
             public void startNotify() {
-                notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
+                String env;
+                try {
+                    env = commandLine.getEnvironmentVariables().get("GOROOT");
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //notifyTextAvailable("GOROOT=" + commandLine.getEnvironment().get("GOROOT") + " #gosetup\n", ProcessOutputTypes.SYSTEM);
+                notifyTextAvailable("GOROOT=" + env + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 notifyTextAvailable("WORKING_DIRECTORY=" + runOptions.getWorkingDir() + " #gosetup\n", ProcessOutputTypes.SYSTEM);
                 super.startNotify();
             }
@@ -123,7 +157,7 @@ public class GinkgoRunningState implements RunProfileState {
         GinkgoRunConfigurationOptions runOptions = configuration.getOptions();
 
         //Can not debug multiple packages at the same time each package is compiled into its own test package for debugging
-        if(runOptions.getGinkgoScope() == GinkgoScope.ALL) {
+        if (runOptions.getGinkgoScope() == GinkgoScope.ALL) {
             throw new ExecutionException("Can not debug on test scope all");
         }
 
@@ -312,6 +346,17 @@ public class GinkgoRunningState implements RunProfileState {
 
     public void setBuildCommand(String buildCommand) {
         this.buildCommand = buildCommand;
+    }
+
+    @Override
+    public void prepareTargetEnvironmentRequest(@NotNull TargetEnvironmentRequest request, @NotNull TargetProgressIndicator targetProgressIndicator) throws ExecutionException {
+        this.targetEnvironmentRequest = request;
+        this.targetProgressIndicator = targetProgressIndicator;
+    }
+
+    @Override
+    public void handleCreatedTargetEnvironment(@NotNull TargetEnvironment targetEnvironment, @NotNull TargetProgressIndicator targetProgressIndicator) throws ExecutionException {
+
     }
 
     private String getGoExecutablePath() {

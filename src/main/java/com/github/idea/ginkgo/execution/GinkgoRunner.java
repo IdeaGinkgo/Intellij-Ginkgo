@@ -14,6 +14,8 @@ import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.runners.AsyncProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.RunContentBuilder;
+import com.intellij.execution.target.TargetEnvironmentRequest;
+import com.intellij.execution.target.TargetProgressIndicator;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -61,6 +63,11 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
 
         if (state instanceof GinkgoRunningState && isDebug((GinkgoRunningState)state)) {
             return debugContentDescriptor(environment, (GinkgoRunningState) state);
+        }
+
+        if (state instanceof GinkgoRunningState) {
+            TargetEnvironmentRequest targetEnvironmentRequest = environment.getTargetEnvironmentRequest();
+            ((GinkgoRunningState) state).prepareTargetEnvironmentRequest(targetEnvironmentRequest, TargetProgressIndicator.EMPTY);
         }
 
         // Ginkgo Execute
