@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class DisableSpec extends AnAction {
 
     public DisableSpec() {
-        super("Disable test", "Disable test", AllIcons.RunConfigurations.TestIgnored);
+        super("Disable Test", "Disable test", AllIcons.RunConfigurations.TestIgnored);
     }
 
     @Override

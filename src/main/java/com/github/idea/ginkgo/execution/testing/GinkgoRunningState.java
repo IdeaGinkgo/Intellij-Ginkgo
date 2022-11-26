@@ -23,6 +23,7 @@ import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.target.value.TargetValue;
+import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
 import com.intellij.openapi.project.Project;
@@ -32,7 +33,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.EnvironmentUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.NetUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.Promise;
@@ -80,8 +80,12 @@ public class GinkgoRunningState implements RunProfileState {
         SMTRunnerConsoleView consoleView = new SMTRunnerConsoleView(consoleProperties);
         SMTestRunnerConnectionUtil.initConsoleView(consoleView, "Ginkgo");
         consoleView.attachToProcess(processHandler);
-
-        return new DefaultExecutionResult(consoleView, processHandler);
+        AbstractRerunFailedTestsAction rerunAction = consoleProperties.createRerunFailedTestsAction(consoleView);
+        DefaultExecutionResult defaultExecutionResult = new DefaultExecutionResult(consoleView, processHandler);
+        if (rerunAction != null) {
+            defaultExecutionResult.setRestartActions(rerunAction);
+        }
+        return defaultExecutionResult;
     }
 
 
@@ -187,6 +191,10 @@ public class GinkgoRunningState implements RunProfileState {
         commandList.add(runOptions.getGinkgoExecutable());
         commandList.add("-v");
         commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
+
+        if (runOptions.isRerun()) {
+            commandList.add("-r");
+        }
 
         switch (runOptions.getGinkgoScope()) {
             case ALL:

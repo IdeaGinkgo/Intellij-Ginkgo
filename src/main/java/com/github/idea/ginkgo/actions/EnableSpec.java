@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class EnableSpec extends AnAction {
 
     public EnableSpec() {
-        super("Enable test", "Enable pending test", AllIcons.RunConfigurations.TestState.Run);
+        super("Enable Test", "Enable pending test", AllIcons.RunConfigurations.TestState.Run);
     }
 
     @Override

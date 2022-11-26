@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- Rerun Failed Tests Option
+
 ### Chore
 - Update pipeline
 
