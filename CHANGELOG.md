@@ -3,6 +3,8 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Added
+- Rerun Failed Tests Option
 ### Fixed
 - Improved parsing for Ginkgo 2.5.x
 
