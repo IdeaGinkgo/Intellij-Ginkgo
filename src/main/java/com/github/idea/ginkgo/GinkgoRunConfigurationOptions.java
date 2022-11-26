@@ -27,6 +27,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     private String focusTestExpression;
     private List<String> testNames;
     private String packageName;
+    private boolean rerun;
 
     public GinkgoRunConfigurationOptions() {
     }
@@ -38,6 +39,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         ginkgoAdditionalOptions = "";
         ginkgoScope = GinkgoScope.ALL;
         focusTestExpression = "";
+        rerun = false;
         testNames = new ArrayList<>();
     }
 
@@ -107,6 +109,14 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public boolean isRerun() {
+        return rerun;
+    }
+
+    public void setRerun(boolean rerun) {
+        this.rerun = rerun;
     }
 
     @Override
