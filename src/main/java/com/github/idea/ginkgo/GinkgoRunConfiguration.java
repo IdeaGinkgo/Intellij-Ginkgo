@@ -62,6 +62,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
+        //return new GinkgoRemoteRunningState
         return new GinkgoRunningState(environment, getProject(), this);
     }
 

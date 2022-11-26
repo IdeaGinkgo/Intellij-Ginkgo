@@ -2,6 +2,7 @@ package com.github.idea.ginkgo.execution;
 
 import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.execution.testing.GinkgoBuildRunningState;
+import com.github.idea.ginkgo.execution.testing.GinkgoRemoteRunningState;
 import com.github.idea.ginkgo.execution.testing.GinkgoRunningState;
 import com.goide.dlv.DlvDisconnectOption;
 import com.goide.execution.GoRunUtil;
@@ -61,13 +62,13 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
     protected Promise<RunContentDescriptor> execute(@NotNull ExecutionEnvironment environment, @NotNull RunProfileState state) throws ExecutionException {
         FileDocumentManager.getInstance().saveAllDocuments();
 
-        if (state instanceof GinkgoRunningState && isDebug((GinkgoRunningState)state)) {
+        if (state instanceof GinkgoRunningState && isDebug((GinkgoRunningState) state)) {
             return debugContentDescriptor(environment, (GinkgoRunningState) state);
         }
 
-        if (state instanceof GinkgoRunningState) {
+        if (state instanceof GinkgoRemoteRunningState) {
             TargetEnvironmentRequest targetEnvironmentRequest = environment.getTargetEnvironmentRequest();
-            ((GinkgoRunningState) state).prepareTargetEnvironmentRequest(targetEnvironmentRequest, TargetProgressIndicator.EMPTY);
+            ((GinkgoRemoteRunningState) state).prepareTargetEnvironmentRequest(targetEnvironmentRequest, TargetProgressIndicator.EMPTY);
         }
 
         // Ginkgo Execute
