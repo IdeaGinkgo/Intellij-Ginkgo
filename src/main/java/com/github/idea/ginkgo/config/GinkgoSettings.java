@@ -1,4 +1,4 @@
-package com.github.idea.ginkgo;
+package com.github.idea.ginkgo.config;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;

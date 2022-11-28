@@ -8,10 +8,7 @@ import jetbrains.buildServer.messages.serviceMessages.TestStdErr;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -19,17 +16,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GinkgoTestEventsConverter extends GotestEventsConverter {
-    private static final Pattern SUITE_START = Pattern.compile("Running Suite: (.*)");
-    private static final Pattern SUCCESS = Pattern.compile("^(SUCCESS!)");
-    private static final Pattern FAIL = Pattern.compile("^(FAIL!)");
-    private static final Pattern START_SUITE_BLOCK = Pattern.compile("Will run [0-9]* of [0-9]* specs");
-    private static final Pattern END_SUITE_BLOCK = Pattern.compile("Ran [0-9]* of [0-9]* Specs in [0-9]*\\.?[0-9]* seconds");
-    private static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
-    private static final Pattern START_SKIP_BLOCK = Pattern.compile("S \\[SKIPPED\\]");;
-    private static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
-    private static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
-    private static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}[\\/-]\\d{2}[\\/-]\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(.*)");
-    private static final String SPEC_SEPARATOR = "------------------------------";
+    protected static final Pattern SUITE_START = Pattern.compile("Running Suite: (.*)");
+    protected static final Pattern SUCCESS = Pattern.compile("^(SUCCESS!)");
+    protected static final Pattern FAIL = Pattern.compile("^(FAIL!)");
+    protected static final Pattern START_SUITE_BLOCK = Pattern.compile("Will run [0-9]* of [0-9]* specs");
+    protected static final Pattern END_SUITE_BLOCK = Pattern.compile("Ran [0-9]* of [0-9]* Specs in [0-9]*\\.?[0-9]* seconds");
+    protected static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
+    protected static final Pattern START_SKIP_BLOCK = Pattern.compile("S \\[SKIPPED\\]");;
+    protected static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
+    protected static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
+    protected static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}[\\/-]\\d{2}[\\/-]\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(.*)");
+    protected static final String SPEC_SEPARATOR = "------------------------------";
     public static final String SUCCESS_PREFIX_1 = "+";
     public static final String SUCCESS_PREFIX_2 = "•";
     public static final String FAILURE_PREFIX_1 = "+ Failure";
@@ -44,19 +41,19 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     public static final String PANIC_PREFIX_5 = "• [PANICKED]";
     public static final String PANIC_PREFIX_6 = "+ [PANICKED]";
 
-    private Stack<String> suites = new Stack<>();
-    private boolean inSuiteBlock;
-    private String specContext;
-    private String specName;
-    private String tempLine;
-    private StringBuilder line = new StringBuilder();
-    private StringBuilder pendingTestOutputBuffer = new StringBuilder();
-    private List<String> pendingSpecNames = new ArrayList<>();
-    private boolean inPendingBlock;
-    private boolean inBeforeSuite;
-    private boolean specCompleted = true;
-    private boolean ginkgoCLIException;
-    private boolean inSkipBlock;
+    protected Stack<String> suites = new Stack<>();
+    protected boolean inSuiteBlock;
+    protected String specContext;
+    protected String specName;
+    protected String tempLine;
+    protected StringBuilder line = new StringBuilder();
+    protected StringBuilder pendingTestOutputBuffer = new StringBuilder();
+    protected List<String> pendingSpecNames = new ArrayList<>();
+    protected boolean inPendingBlock;
+    protected boolean inBeforeSuite;
+    protected boolean specCompleted = true;
+    protected boolean ginkgoCLIException;
+    protected boolean inSkipBlock;
 
     public GinkgoTestEventsConverter(@NotNull String defaultImportPath, @NotNull TestConsoleProperties consoleProperties) {
         super(defaultImportPath, consoleProperties);
@@ -180,6 +177,10 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
                 return line.length();
             }
 
+            if (line.startsWith(SPEC_SEPARATOR)) {
+                return line.length();
+            }
+
             if (specContext == null) {
                 specContext = line.trim();
                 tempLine = line;
@@ -213,18 +214,18 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         return line.length();
     }
 
-    private static boolean isFailure(@NotNull String line) {
+    protected static boolean isFailure(@NotNull String line) {
         return line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
                 || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4);
     }
 
-    private static boolean isPanic(@NotNull String line) {
+    protected static boolean isPanic(@NotNull String line) {
         return line.startsWith(PANIC_PREFIX_1) || line.startsWith(PANIC_PREFIX_2)
                 || line.startsWith(PANIC_PREFIX_3) || line.startsWith(PANIC_PREFIX_4)
                 || line.startsWith(PANIC_PREFIX_5) || line.startsWith(PANIC_PREFIX_6);
     }
 
-    private int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
+    protected int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
         if (line.startsWith(SPEC_SEPARATOR)) {
             inBeforeSuite = false;
             return line.length();
@@ -233,7 +234,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         return line.length();
     }
 
-    private String cleanSuiteName(String group) {
+    protected String cleanSuiteName(String group) {
         int locationDataStart = group.lastIndexOf("-");
         if (locationDataStart == -1) {
             return group;
@@ -253,7 +254,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
      * @return
      * @throws ParseException
      */
-    private int processPendingSpecBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
+    protected int processPendingSpecBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
         if (line.startsWith(SPEC_SEPARATOR)) {
             String pendingSpecName = String.join(" ", pendingSpecNames);
 
@@ -281,7 +282,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
      * @return
      * @throws ParseException
      */
-    private int processSkipSpecBlock(@NotNull String line) {
+    protected int processSkipSpecBlock(@NotNull String line) {
         if (line.startsWith(SPEC_SEPARATOR)) {
             inSkipBlock = false;
             return line.length();
@@ -296,7 +297,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
      *
      * @param line
      */
-    private void addPendingSpecName(String line) {
+    protected void addPendingSpecName(String line) {
         if (!FILE_LOCATION_OUTPUT.matcher(line).find()) {
             pendingSpecNames.add(line.trim());
         }

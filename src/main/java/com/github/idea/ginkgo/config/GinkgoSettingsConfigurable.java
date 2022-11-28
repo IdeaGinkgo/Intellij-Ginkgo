@@ -1,6 +1,5 @@
 package com.github.idea.ginkgo.config;
 
-import com.github.idea.ginkgo.GinkgoSettings;
 import com.intellij.openapi.options.ConfigurableBase;
 import org.jetbrains.annotations.NotNull;
 

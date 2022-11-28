@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Improved parsing for Ginkgo 2.5.x
+
+## [0.7.1]
 ### Chore
 - Add functionality to Ginkgo Expression
 ### Fixed

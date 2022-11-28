@@ -1,6 +1,5 @@
 package com.github.idea.ginkgo.config;
 
-import com.github.idea.ginkgo.GinkgoSettings;
 import com.intellij.openapi.options.ConfigurableUi;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ui.FormBuilder;

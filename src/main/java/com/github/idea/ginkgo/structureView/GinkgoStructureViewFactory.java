@@ -1,6 +1,6 @@
 package com.github.idea.ginkgo.structureView;
 
-import com.github.idea.ginkgo.GinkgoSettings;
+import com.github.idea.ginkgo.config.GinkgoSettings;
 import com.goide.tree.GoStructureViewFactory;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;

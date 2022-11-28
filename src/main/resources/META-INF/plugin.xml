@@ -10,7 +10,7 @@
 
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationConfigurable id="GinkgoConfiguration" groupId="language" instance="com.github.idea.ginkgo.config.GinkgoSettingsConfigurable" displayName="Ginkgo"/>
+        <projectConfigurable id="GinkgoConfiguration" groupId="language" instance="com.github.idea.ginkgo.config.GinkgoSettingsConfigurable" displayName="Ginkgo"/>
         <programRunner implementation="com.github.idea.ginkgo.execution.GinkgoRunner"/>
         <fileType name="Ginkgo"
                   implementationClass="com.github.idea.ginkgo.file.GinkgoFileType"
