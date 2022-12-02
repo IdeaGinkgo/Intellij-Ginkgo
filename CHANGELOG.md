@@ -3,8 +3,12 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Update build plugin files
 ### Fixed
 - Improved parsing for Ginkgo 2.5.x
+- Add Support for 2022.3
+- Building with java 17
 
 ## [0.7.1]
 ### Chore
