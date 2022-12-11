@@ -3,12 +3,16 @@ package com.github.idea.ginkgo;
 import com.goide.GoTypes;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoStringLiteral;
+import com.intellij.execution.TestStateStorage;
+import com.intellij.execution.testframework.TestIconMapper;
+import com.intellij.execution.testframework.sm.runner.states.TestStateInfo;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +73,41 @@ public class GinkgoExpression {
     }
 
     public PresentationData getPresentationData() {
-        return new PresentationData(getFullName(), "", AllIcons.RunConfigurations.TestState.Run, null);
+        return new PresentationData(getFullName(), "", getSpecStateIcon(), null);
+    }
+
+    private Icon getSpecStateIcon() {
+        TestStateStorage testStateStorage = TestStateStorage.getInstance(getProject());
+
+        TestStateStorage.Record record = testStateStorage.getState(getTestURL());
+        if (record != null) {
+            return getTestStateIcon(record);
+        }
+
+        record = testStateStorage.getState(getTestURLV2());
+        if (record != null) {
+            return getTestStateIcon(record);
+        }
+
+        return AllIcons.RunConfigurations.TestState.Run;
+    }
+
+    private static Icon getTestStateIcon(TestStateStorage.Record record) {
+        TestStateInfo.Magnitude magnitude = TestIconMapper.getMagnitude(record.magnitude);
+        if (magnitude != null) {
+            switch (magnitude) {
+                case ERROR_INDEX, FAILED_INDEX -> {
+                    return AllIcons.RunConfigurations.TestState.Red2;
+                }
+                case PASSED_INDEX, COMPLETE_INDEX -> {
+                    return AllIcons.RunConfigurations.TestState.Green2;
+                }
+                default -> {
+                    return AllIcons.RunConfigurations.TestState.Run;
+                }
+            }
+        }
+        return AllIcons.RunConfigurations.TestState.Run;
     }
 
     public String getSpecName() {
@@ -109,6 +147,15 @@ public class GinkgoExpression {
         }
 
         return "gotest://" + GINKGO + "#" + parent.getFocusExpression() + "/" + getSpecName();
+    }
+
+    public String getTestURLV2() {
+        GinkgoExpression parent = getParentSpec();
+        if (parent == null) {
+            return "";
+        }
+
+        return "gotest://" + GINKGO + "#" + parent.getFocusExpression() + " " + getSpecName();
     }
 
     private GinkgoExpression getParentSpec() {

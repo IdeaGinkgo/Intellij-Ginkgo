@@ -11,6 +11,9 @@
 - Update pipeline
 - Update gradle version
 
+### Fixed
+- Ginkgo 2.5.x test status indicators
+
 ## [0.7.2] - 2022-12-03
 
 ### Chore

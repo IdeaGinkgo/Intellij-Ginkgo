@@ -62,6 +62,10 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
         if (record != null) {
             return getTestStateIcon(record, false);
         }
+        record = testStateStorage.getState(ginkgoExpression.getTestURLV2());
+        if (record != null) {
+            return getTestStateIcon(record, false);
+        }
         return AllIcons.RunConfigurations.TestState.Run;
     }
 }
