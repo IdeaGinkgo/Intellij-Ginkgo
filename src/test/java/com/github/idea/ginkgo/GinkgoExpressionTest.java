@@ -59,6 +59,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertEquals("Ginkgo Describe MultipleContext it should be true", ginkgoExpression.getFocusExpression());
         assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "it should be true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/it should be true", ginkgoExpression.getTestURL());
+        assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext it should be true", ginkgoExpression.getTestURLV2());
     }
 
     @Test
@@ -72,6 +73,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertEquals("Ginkgo Describe MultipleContext (when )?when true", ginkgoExpression.getFocusExpression());
         assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "when true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/when true", ginkgoExpression.getTestURL());
+        assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext when true", ginkgoExpression.getTestURLV2());
     }
 
     @Test
@@ -85,6 +87,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertEquals("Ginkgo Describe MultipleContext specify true", ginkgoExpression.getFocusExpression());
         assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "specify true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext/specify true", ginkgoExpression.getTestURL());
+        assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext specify true", ginkgoExpression.getTestURLV2());
     }
 
     @Test
@@ -110,6 +113,7 @@ public class GinkgoExpressionTest extends BasePlatformTestCase {
         assertEquals("Ginkgo Describe MultipleContext Table true", ginkgoExpression.getFocusExpression());
         assertEquals(Arrays.asList("Ginkgo", "Describe", "MultipleContext", "Table", "true"), ginkgoExpression.getSpecLocation());
         assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext Table/true", ginkgoExpression.getTestURL());
+        assertEquals("gotest://Ginkgo#Ginkgo Describe MultipleContext Table true", ginkgoExpression.getTestURLV2());
     }
 
     private LeafPsiElement getLeafPsiElement(String filePath, String spec) {
