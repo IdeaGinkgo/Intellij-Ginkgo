@@ -9,6 +9,7 @@
 
 ### Chore
 - Update pipeline
+- Update gradle version
 
 ## [0.7.2] - 2022-12-03
 
