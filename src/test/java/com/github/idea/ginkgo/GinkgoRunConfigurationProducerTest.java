@@ -46,14 +46,28 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
         createsConfigurationWithFocusExpression(file, "FSpecify", "Ginkgo Describe MultipleContext specify true");
     }
 
-    private void createsConfigurationWithFocusExpression(GoFile file, String spec, String focusExpression) {
-        GinkgoRunConfiguration config = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
-        PsiElement specElement = getSpecElement(file, spec);
+    @Test
+    public void useSettingsFromConfigTemplate() {
+        GinkgoRunConfiguration configTemplate = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
+        configTemplate.getOptions().setGinkgoAdditionalOptions("additional options");
+
+        GoFile file = (GoFile) myFixture.configureByFile("marker_ginkgo.go");
+        PsiElement specElement = getSpecElement(file, "Describe");
         ConfigurationContext context = new ConfigurationContext(specElement);
-        boolean result = ginkgoRunConfigurationProducer.setupConfigurationFromContext(config, context, new Ref<>(specElement));
+        boolean result = ginkgoRunConfigurationProducer.setupConfigurationFromContext(configTemplate, context, new Ref<>(specElement));
 
         assertTrue(result);
-        assertEquals(focusExpression, config.getOptions().getFocusTestExpression());
+        assertEquals("additional options", configTemplate.getOptions().getGinkgoAdditionalOptions());
+    }
+
+    private void createsConfigurationWithFocusExpression(GoFile file, String spec, String focusExpression) {
+        GinkgoRunConfiguration configTemplate = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
+        PsiElement specElement = getSpecElement(file, spec);
+        ConfigurationContext context = new ConfigurationContext(specElement);
+        boolean result = ginkgoRunConfigurationProducer.setupConfigurationFromContext(configTemplate, context, new Ref<>(specElement));
+
+        assertTrue(result);
+        assertEquals(focusExpression, configTemplate.getOptions().getFocusTestExpression());
     }
 
     private @NotNull PsiElement getSpecElement(GoFile file, String specType) {

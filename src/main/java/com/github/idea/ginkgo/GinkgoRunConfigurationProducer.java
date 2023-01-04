@@ -40,7 +40,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         ginkgoRunConfigurationOptions.setGinkgoExecutable(options.getGinkgoExecutable());
         ginkgoRunConfigurationOptions.setWorkingDir(context.getPsiLocation().getContainingFile().getContainingDirectory().getVirtualFile().getPath());
         ginkgoRunConfigurationOptions.setEnvData(options.getEnvData());
-        ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions("");
+        ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(options.getGinkgoAdditionalOptions());
         ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
         ginkgoRunConfigurationOptions.setTestNames(specNames);
         ginkgoRunConfigurationOptions.setFocusTestExpression(String.join(" ", specNames));

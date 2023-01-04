@@ -13,6 +13,7 @@
 
 ### Fixed
 - Ginkgo 2.5.x test status indicators
+- Additional options not being used from test templates
 
 ## [0.7.2] - 2022-12-03
 
