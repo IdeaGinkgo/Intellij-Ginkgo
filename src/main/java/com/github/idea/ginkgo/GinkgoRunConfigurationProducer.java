@@ -44,6 +44,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
         ginkgoRunConfigurationOptions.setTestNames(specNames);
         ginkgoRunConfigurationOptions.setFocusTestExpression(String.join(" ", specNames));
+        ginkgoRunConfigurationOptions.setGoToolOptions(options.getGoToolOptions());
         GoFile file = (GoFile) context.getPsiLocation().getContainingFile();
         ginkgoRunConfigurationOptions.setPackageName(file.getPackageName());
 

@@ -22,6 +22,7 @@ public class GinkgoSerializationUtilTest {
         configOptions.setGinkgoScope(GinkgoScope.ALL);
         configOptions.setFocusTestExpression("");
         configOptions.setTestNames(Arrays.asList("ginkgo all"));
+        configOptions.setGoToolOptions("build tool options");
         Element element = new Element("ginkgo_config");
 
         GinkgoSerializationUtil.writeXml(element, configOptions);
@@ -40,6 +41,7 @@ public class GinkgoSerializationUtilTest {
         configOptions.setGinkgoScope(GinkgoScope.FOCUS);
         configOptions.setFocusTestExpression("books");
         configOptions.setTestNames(Arrays.asList("books"));
+        configOptions.setGoToolOptions("build tool options");
         Element element = new Element("ginkgo_config");
 
         GinkgoSerializationUtil.writeXml(element, configOptions);

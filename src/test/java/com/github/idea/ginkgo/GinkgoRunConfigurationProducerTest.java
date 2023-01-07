@@ -50,6 +50,7 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
     public void useSettingsFromConfigTemplate() {
         GinkgoRunConfiguration configTemplate = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
         configTemplate.getOptions().setGinkgoAdditionalOptions("additional options");
+        configTemplate.getOptions().setGoToolOptions("build tool options");
 
         GoFile file = (GoFile) myFixture.configureByFile("marker_ginkgo.go");
         PsiElement specElement = getSpecElement(file, "Describe");
@@ -58,6 +59,7 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
 
         assertTrue(result);
         assertEquals("additional options", configTemplate.getOptions().getGinkgoAdditionalOptions());
+        assertEquals("build tool options", configTemplate.getOptions().getGoToolOptions());
     }
 
     private void createsConfigurationWithFocusExpression(GoFile file, String spec, String focusExpression) {

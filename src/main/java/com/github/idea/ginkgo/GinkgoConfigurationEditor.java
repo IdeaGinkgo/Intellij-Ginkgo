@@ -25,6 +25,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
     private TextFieldWithBrowseButton workingDirectory = createWorkingDirectoryField();
     private EnvironmentVariablesTextFieldWithBrowseButton envVars = new EnvironmentVariablesTextFieldWithBrowseButton();
     private RawCommandLineEditor ginkgoAdditionalOptions = createGinkgoOptionsField();
+    private RawCommandLineEditor goToolOptions = createGoToolOptionsField();
     private JPanel scopeViewPanel = new JPanel(new BorderLayout());
 
     private ButtonGroup scopeButtonGroup = new ButtonGroup();
@@ -41,6 +42,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
                 .addLabeledComponent("Ginkgo executable", ginkgoExecutableField)
                 .addLabeledComponent("Working directory", workingDirectory)
                 .addLabeledComponent("Ginkgo additional options", ginkgoAdditionalOptions)
+                .addLabeledComponent("Go tool options", goToolOptions)
                 .addLabeledComponent("Environmental variables", envVars)
                 .addSeparator()
                 .addComponent(createScopeRadioButtonPanel(scopeButtonGroup))
@@ -61,6 +63,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
         workingDirectory.setText(ginkgoRunConfigurationOptions.getWorkingDir());
         envVars.setData(ginkgoRunConfigurationOptions.getEnvData());
         ginkgoAdditionalOptions.setText(ginkgoRunConfigurationOptions.getGinkgoAdditionalOptions());
+        goToolOptions.setText(ginkgoRunConfigurationOptions.getGoToolOptions());
         GinkgoScope ginkgoScope = ginkgoRunConfigurationOptions.getGinkgoScope();
         setSelectedScope(ginkgoScope);
         getScopeView(ginkgoScope).resetFrom(ginkgoRunConfigurationOptions);
@@ -81,11 +84,11 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
         ginkgoRunConfigurationOptions.setWorkingDir(workingDirectory.getText());
         ginkgoRunConfigurationOptions.setEnvData(envVars.getData());
         ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(ginkgoAdditionalOptions.getText());
+        ginkgoRunConfigurationOptions.setGoToolOptions(goToolOptions.getText());
         ginkgoRunConfigurationOptions.setGinkgoScope(selectedScope);
         ginkgoRunConfigurationOptions.setTestNames(myOptions.getTestNames());
 
-        GinkgoScope ginkgoScope = selectedScope;
-        getScopeView(ginkgoScope).applyTo(ginkgoRunConfigurationOptions);
+        getScopeView(selectedScope).applyTo(ginkgoRunConfigurationOptions);
 
         config.setOptions(ginkgoRunConfigurationOptions);
     }
@@ -231,6 +234,20 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
 
         if (field instanceof ComponentWithEmptyText) {
             ((ComponentWithEmptyText) field).getEmptyText().setText("CLI options, e.g. --fail-fast=true");
+        }
+
+        return editor;
+    }
+
+    private RawCommandLineEditor createGoToolOptionsField() {
+        RawCommandLineEditor editor = new RawCommandLineEditor();
+        JTextField field = editor.getTextField();
+        if (field instanceof ExpandableTextField) {
+            field.putClientProperty("monospaced", false);
+        }
+
+        if (field instanceof ComponentWithEmptyText) {
+            ((ComponentWithEmptyText) field).getEmptyText().setText("Tool options, e.g. --tags e2e");
         }
 
         return editor;

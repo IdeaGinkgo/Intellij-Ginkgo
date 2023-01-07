@@ -19,6 +19,7 @@ public class GinkgoSerializationUtil {
     private static final String WORKING_DIR = "working-dir";
     private static final String GINKGO_EXECUTABLE = "ginkgo-executable";
     private static final String GINKGO_ADDITIONAL_OPTIONS = "ginkgo-additional-options";
+    private static final String GO_TOOL_OPTIONS = "go-tool-options";
     private static final String GINKGO_SCOPE = "ginkgo-scope";
     private static final String FOCUS_EXPRESSION = "focus-expression";
     private static final String TEST_NAMES = "test-names";
@@ -34,6 +35,7 @@ public class GinkgoSerializationUtil {
         writePath(element, WORKING_DIR, runSettings.getWorkingDir());
         runSettings.getEnvData().writeExternal(element);
         writeNonEmptyField(element, GINKGO_ADDITIONAL_OPTIONS, runSettings.getGinkgoAdditionalOptions());
+        writeNonEmptyField(element, GO_TOOL_OPTIONS, runSettings.getGoToolOptions());
         write(element, GINKGO_SCOPE, runSettings.getGinkgoScope().name());
         write(element, FOCUS_EXPRESSION, runSettings.getFocusTestExpression());
         write(element, PACKAGE_NAME, runSettings.getPackageName());
@@ -68,6 +70,7 @@ public class GinkgoSerializationUtil {
         ginkgoRunConfigurationOptions.setWorkingDir(read(element, WORKING_DIR));
         ginkgoRunConfigurationOptions.setEnvData(EnvironmentVariablesData.readExternal(element));
         ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(read(element, GINKGO_ADDITIONAL_OPTIONS));
+        ginkgoRunConfigurationOptions.setGoToolOptions(read(element, GO_TOOL_OPTIONS));
         ginkgoRunConfigurationOptions.setGinkgoScope(readScope(element));
         ginkgoRunConfigurationOptions.setFocusTestExpression(read(element, FOCUS_EXPRESSION));
         ginkgoRunConfigurationOptions.setPackageName(read(element, PACKAGE_NAME));

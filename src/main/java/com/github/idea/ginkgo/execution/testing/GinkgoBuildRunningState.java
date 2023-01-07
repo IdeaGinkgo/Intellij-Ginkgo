@@ -151,6 +151,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
         commandList.add(goExecutable);
         commandList.add("test");
         commandList.add("-c");
+        commandList.addAll(options.getGoToolOptionsList());
         commandList.add("-o");
         commandList.add(outputFile.getPath());
         commandList.add("-gcflags");
