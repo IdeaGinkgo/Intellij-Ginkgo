@@ -29,6 +29,8 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     private String packageName;
     private boolean rerun;
 
+    private String goToolOptions;
+
     public GinkgoRunConfigurationOptions() {
     }
 
@@ -41,6 +43,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         focusTestExpression = "";
         rerun = false;
         testNames = new ArrayList<>();
+        goToolOptions = "";
     }
 
     public String getGinkgoExecutable() {
@@ -72,7 +75,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     }
 
     public List<String> getGinkgoAdditionalOptionsList() {
-        return ParametersListUtil.parse(ginkgoAdditionalOptions, false, true);
+        return ParametersListUtil.parse(ginkgoAdditionalOptions, false, false);
     }
 
     public void setGinkgoAdditionalOptions(String ginkgoAdditionalOptions) {
@@ -119,6 +122,18 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         this.rerun = rerun;
     }
 
+    public String getGoToolOptions() {
+        return goToolOptions;
+    }
+
+    public List<String> getGoToolOptionsList() {
+        return ParametersListUtil.parse(goToolOptions, false, true);
+    }
+
+    public void setGoToolOptions(String buildToolOptions) {
+        this.goToolOptions = buildToolOptions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -131,6 +146,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
         if (!getWorkingDir().equals(that.getWorkingDir())) return false;
         if (!getEnvData().equals(that.getEnvData())) return false;
         if (!getGinkgoAdditionalOptions().equals(that.getGinkgoAdditionalOptions())) return false;
+        if (!getGoToolOptions().equals(that.getGoToolOptions())) return false;
         if (getGinkgoScope() != that.getGinkgoScope()) return false;
         if (!getFocusTestExpression().equals(that.getFocusTestExpression())) return false;
         return getTestNames().equals(that.getTestNames());

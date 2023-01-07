@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- go tool arguments for improved build tag support 
+
 ### Fixed
 - Show configuration error if package name missing from focus expression
 

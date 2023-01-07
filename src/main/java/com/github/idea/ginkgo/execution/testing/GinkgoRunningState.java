@@ -190,6 +190,7 @@ public class GinkgoRunningState implements RunProfileState {
         List<String> commandList = new ArrayList<>();
         commandList.add(runOptions.getGinkgoExecutable());
         commandList.add("-v");
+        commandList.addAll(runOptions.getGoToolOptionsList());
         commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
 
         if (runOptions.isRerun()) {
