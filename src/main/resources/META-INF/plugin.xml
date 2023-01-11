@@ -26,6 +26,7 @@
         <lang.psiStructureViewFactory language="go"
                                       implementationClass="com.github.idea.ginkgo.structureView.GinkgoStructureViewFactory"
                                       order="first"/> <!-- needs to be before com.goide.tree.GoStructureViewFactory, but it has no id -->
+        <toolWindow factoryClass="com.github.idea.ginkgo.structureView.GinkgoViewWindowFactory" id="ginkgoStructView"/>
     </extensions>
     <actions>
         <action id="GinkgoEnableSpec" class="com.github.idea.ginkgo.actions.EnableSpec"/>
