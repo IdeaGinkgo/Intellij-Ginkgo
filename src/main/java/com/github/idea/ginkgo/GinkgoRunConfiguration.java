@@ -1,6 +1,7 @@
 package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.execution.testing.GinkgoRunningState;
+import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.github.idea.ginkgo.util.GinkgoSerializationUtil;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -26,7 +27,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     }
 
     @Override
-    public GinkgoRunConfigurationOptions getOptions() {
+    public @NotNull GinkgoRunConfigurationOptions getOptions() {
         return myOptions;
     }
 
@@ -35,7 +36,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
     }
 
     @Override
-    public GinkgoConfigurationEditor getConfigurationEditor() {
+    public @NotNull GinkgoConfigurationEditor getConfigurationEditor() {
         return new GinkgoConfigurationEditor(getProject());
     }
 
@@ -47,6 +48,10 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
 
         if (!new File(myOptions.getGinkgoExecutable()).exists()) {
             throw new RuntimeConfigurationException("Ginkgo executable is invalid");
+        }
+
+        if (myOptions.getGinkgoScope().equals(GinkgoScope.FOCUS) && myOptions.getPackageName().isBlank()) {
+            throw new RuntimeConfigurationException("Package is not specified");
         }
     }
 

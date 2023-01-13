@@ -95,7 +95,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
      * @return              Temp compiled test file target
      * @throws ExecutionException
      */
-    private @NotNull File getOutputFile(String packageName) throws ExecutionException {
+    private @NotNull File getOutputFile(@NotNull String packageName) throws ExecutionException {
         String binaryName = GoEnvironmentUtil.getBinaryFileNameForPath(FileUtil.sanitizeFileName(packageName), ".test", GoOsManager.isWindows());
         File outputDirectory = GoUtil.getGoLandTempDirectory().toFile();
         try {

@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Fixed
+- Show configuration error if package name missing from focus expression
+
+## [0.8.0] - 2023-01-03
+
 ### Added
 - Rerun Failed Tests Option
 
@@ -175,7 +180,8 @@
 - Hopefully improved test runner experience
 - Removed recursive flag for focus tests
 
-[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.7.2...HEAD
+[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.6.5...v0.7.0
