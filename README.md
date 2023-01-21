@@ -15,18 +15,19 @@ Unfortunately because it relies on the go plugin it is only compatible with Inte
 Also relies on the Ginkgo CLI as a test executor.  
 You can install the executor with either:
 ```bash
-go get github.com/onsi/ginkgo/ginkgo
+go get github.com/onsi/ginkgo/v2/ginkgo
 ```
 or
 ```bash
-go install github.com/onsi/ginkgo/ginkgo
+go install github.com/onsi/ginkgo/v2/ginkgo
 ```
-depending on your go version.  Please refer to the ginkgo documentation for additional information.
+depending on your go version.  Please refer to the Ginkgo documentation for additional information.
 
 ## Features:
-- Run specific test specs from the gutter.
+- Run/Debug specific test specs from the gutter.
 - Ginkgo test run configuration.
 - View tests results.
+- View test structure.
 
 <!-- Plugin description end -->
 
@@ -37,10 +38,9 @@ depending on your go version.  Please refer to the ginkgo documentation for addi
 
 ## Help me?
 I am looking for help in general, but some specific topics include:
- - Improving the ginkgo test parser
- - Adding debug capabilities
- - Cleaning up implementation and fixing the stuff I undoubtedly did incorrectly
- - Adding tests.
+ - Improving the Ginkgo test parser
+ - Cleaning up implementation
+ - Adding tests
 
 
 ## Installation
