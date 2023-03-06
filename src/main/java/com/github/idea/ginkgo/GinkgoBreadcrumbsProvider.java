@@ -2,6 +2,7 @@ package com.github.idea.ginkgo;
 
 import com.github.idea.ginkgo.util.GinkgoUtil;
 import com.goide.GoLanguage;
+import com.goide.editor.GoBreadcrumbsProvider;
 import com.goide.psi.GoCallExpr;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.Language;
@@ -23,6 +24,8 @@ import static com.github.idea.ginkgo.icons.GinkgoIcons.DISABLE_SPEC_ICON;
 public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
     private static final Language[] LANGUAGES = {GoLanguage.INSTANCE};
 
+    private final BreadcrumbsProvider defaultProvider = new GoBreadcrumbsProvider();
+
     @Override
     public Language[] getLanguages() {
         return LANGUAGES;
@@ -30,12 +33,18 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
 
     @Override
     public boolean acceptElement(@NotNull PsiElement e) {
+        if (!GinkgoUtil.isGinkgoTestFile(e.getContainingFile())) {
+            return this.defaultProvider.acceptElement(e);
+        }
         GinkgoExpression ginkgoExpression = getGinkgoExpression(e);
         return ginkgoExpression.isValid();
     }
 
     @Override
     public @NotNull @NlsSafe String getElementInfo(@NotNull PsiElement e) {
+        if (!GinkgoUtil.isGinkgoTestFile(e.getContainingFile())) {
+            return this.defaultProvider.getElementInfo(e);
+        }
         GinkgoExpression ginkgoExpression = getGinkgoExpression(e);
         if (!ginkgoExpression.isValid()) {
             return "";
@@ -50,7 +59,7 @@ public class GinkgoBreadcrumbsProvider implements BreadcrumbsProvider {
     public @Nullable Icon getElementIcon(@NotNull PsiElement e) {
         PsiFile file = e.getContainingFile();
         if (!GinkgoUtil.isGinkgoTestFile(file)) {
-            return null;
+            return this.defaultProvider.getElementIcon(e);
         }
 
         GinkgoExpression ginkgoExpression = getGinkgoExpression(e);

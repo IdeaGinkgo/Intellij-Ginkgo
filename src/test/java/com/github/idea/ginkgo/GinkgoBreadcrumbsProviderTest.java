@@ -3,6 +3,7 @@ package com.github.idea.ginkgo;
 import com.goide.GoLanguage;
 import com.goide.psi.GoCallExpr;
 import com.goide.psi.GoFile;
+import com.goide.psi.GoStructType;
 import com.intellij.icons.AllIcons;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -15,6 +16,7 @@ import org.junit.runners.JUnit4;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static com.github.idea.ginkgo.icons.GinkgoIcons.DISABLED_TEST_ICON;
 
@@ -53,6 +55,9 @@ public class GinkgoBreadcrumbsProviderTest extends BasePlatformTestCase {
         acceptsElement(file, "FIt");
         acceptsElement(file, "FEntry");
         acceptsElement(file, "FSpecify");
+
+        GoFile nonTestFile = (GoFile) myFixture.configureByFile("go_file.go");
+        assertTrue(ginkgoBreadcrumbsProvider.acceptElement(getStructFieldElement(nonTestFile, "Title")));
     }
 
     private void acceptsElement(GoFile file, String spec) {
@@ -74,6 +79,9 @@ public class GinkgoBreadcrumbsProviderTest extends BasePlatformTestCase {
         assertReturnsDescription(file, "FIt", "FIt it should be true");
         assertReturnsDescription(file, "FEntry", "FEntry true");
         assertReturnsDescription(file, "FSpecify", "FSpecify specify true");
+
+        GoFile nonTestFile = (GoFile) myFixture.configureByFile("go_file.go");
+        assertEquals("Title: string", ginkgoBreadcrumbsProvider.getElementInfo(getStructFieldElement(nonTestFile, "Title")));
     }
 
     private void assertReturnsDescription(GoFile file, String spec, String expected) {
@@ -116,5 +124,12 @@ public class GinkgoBreadcrumbsProviderTest extends BasePlatformTestCase {
                 .filter(e-> specType.equals(e.getExpression().getText()))
                 .findFirst()
                 .orElseThrow(()->new AssertionFailedError(String.format("Not found: %s", specType)));
+    }
+
+    private @NotNull PsiElement getStructFieldElement(GoFile file, String fieldName) {
+        return PsiTreeUtil.findChildrenOfType(file, GoStructType.class).stream()
+                .flatMap(e-> e.getFieldDefinitions().stream().filter(f -> Objects.equals(f.getName(), fieldName)) )
+                .findFirst()
+                .orElseThrow(()->new AssertionFailedError(String.format("Not found: %s", fieldName)));
     }
 }
