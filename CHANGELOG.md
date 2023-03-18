@@ -3,6 +3,12 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Bread crumbs default provider
+
+### Chore
+- refactor executor for readability
+- update build yml
 
 ## [0.9.0] - 2023-01-07
 
