@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 ### Fixed
+- Pipe symbol "|" used in test name escaped in Focus expression
+- Working directory not being used from test templates
 - Bread crumbs default provider
 
 ### Chore
