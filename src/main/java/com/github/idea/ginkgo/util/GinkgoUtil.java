@@ -56,7 +56,10 @@ public class GinkgoUtil {
     }
 
     public static String escapeRegexCharacters(String specName) {
-        return specName.replace("\"", "").replace("(", "\\(").replace(")", "\\)");
+        return specName.replace("\"", "")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("|", "\\|");
     }
 
     public static boolean isGinkgoTestFile(PsiFile file) {
