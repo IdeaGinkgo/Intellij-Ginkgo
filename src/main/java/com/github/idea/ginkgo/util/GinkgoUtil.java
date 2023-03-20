@@ -59,7 +59,7 @@ public class GinkgoUtil {
         return specName.replace("\"", "")
                 .replace("(", "\\(")
                 .replace(")", "\\)")
-                .replace("|", "\\|");
+                .replace("|", "\\\\|");
     }
 
     public static boolean isGinkgoTestFile(PsiFile file) {
