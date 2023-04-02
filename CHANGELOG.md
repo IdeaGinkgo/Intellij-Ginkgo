@@ -3,14 +3,17 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Working directory is used from Configuration template
+- Pipe "|" symbol used in test name escaped in Focus expression
+
+## [0.9.2] - 2023-03-29
 ### Chore
 - Update support to 2023.1
 
 ## [0.9.1] - 2023-03-17
 
 ### Fixed
-- Pipe symbol "|" used in test name escaped in Focus expression
-- Working directory not being used from test templates
 - Bread crumbs default provider
 
 ### Chore
