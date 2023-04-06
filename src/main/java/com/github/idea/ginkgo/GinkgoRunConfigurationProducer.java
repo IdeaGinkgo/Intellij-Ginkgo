@@ -38,7 +38,7 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
 
         GinkgoRunConfigurationOptions ginkgoRunConfigurationOptions = new GinkgoRunConfigurationOptions();
         ginkgoRunConfigurationOptions.setGinkgoExecutable(options.getGinkgoExecutable());
-        ginkgoRunConfigurationOptions.setWorkingDir(!options.getWorkingDir().isEmpty() ? options.getWorkingDir() : context.getPsiLocation().getContainingFile().getContainingDirectory().getVirtualFile().getPath());
+        ginkgoRunConfigurationOptions.setWorkingDir(configWorkingDirectory(context, options));
         ginkgoRunConfigurationOptions.setEnvData(options.getEnvData());
         ginkgoRunConfigurationOptions.setGinkgoAdditionalOptions(options.getGinkgoAdditionalOptions());
         ginkgoRunConfigurationOptions.setGinkgoScope(GinkgoScope.FOCUS);
@@ -51,6 +51,15 @@ public class GinkgoRunConfigurationProducer extends LazyRunConfigurationProducer
         configuration.setOptions(ginkgoRunConfigurationOptions);
         configuration.setGeneratedName();
         return true;
+    }
+
+    private static String configWorkingDirectory(@NotNull ConfigurationContext context, GinkgoRunConfigurationOptions options) {
+        if (!options.getWorkingDir().equals(context.getProject().getBasePath())) {
+            //if the working directory has been overridden in the template use it.
+            return options.getWorkingDir();
+        }
+        //default to using the working directory of the file this is the common case.
+        return Objects.requireNonNull(context.getPsiLocation()).getContainingFile().getContainingDirectory().getVirtualFile().getPath();
     }
 
     @Override

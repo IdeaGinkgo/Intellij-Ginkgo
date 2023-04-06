@@ -5,7 +5,7 @@ import com.intellij.execution.testframework.TestConsoleProperties;
 import com.intellij.openapi.util.Key;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
 import jetbrains.buildServer.messages.serviceMessages.TestStdErr;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;

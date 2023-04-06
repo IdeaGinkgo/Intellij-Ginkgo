@@ -4,8 +4,9 @@
 
 ## [Unreleased]
 ### Fixed
-- Working directory is used from Configuration template
+- Working directory is used from Configuration Template (use with caution)
 - Pipe "|" symbol used in test name escaped in Focus expression
+- Fixed error preventing test execution in GoLand 2023.1
 
 ## [0.9.2] - 2023-03-29
 ### Chore

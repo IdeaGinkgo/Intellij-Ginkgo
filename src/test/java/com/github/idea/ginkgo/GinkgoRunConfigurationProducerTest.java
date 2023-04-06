@@ -51,6 +51,7 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
         GinkgoRunConfiguration configTemplate = (GinkgoRunConfiguration) new GinkgoConfigurationType().createTemplateConfiguration(getProject());
         configTemplate.getOptions().setGinkgoAdditionalOptions("additional options");
         configTemplate.getOptions().setGoToolOptions("build tool options");
+        configTemplate.getOptions().setWorkingDir("custom directory");
 
         GoFile file = (GoFile) myFixture.configureByFile("marker_ginkgo.go");
         PsiElement specElement = getSpecElement(file, "Describe");
@@ -60,6 +61,7 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
         assertTrue(result);
         assertEquals("additional options", configTemplate.getOptions().getGinkgoAdditionalOptions());
         assertEquals("build tool options", configTemplate.getOptions().getGoToolOptions());
+        assertEquals("custom directory", configTemplate.getOptions().getWorkingDir());
     }
 
     private void createsConfigurationWithFocusExpression(GoFile file, String spec, String focusExpression) {
@@ -70,6 +72,7 @@ public class GinkgoRunConfigurationProducerTest extends BasePlatformTestCase {
 
         assertTrue(result);
         assertEquals(focusExpression, configTemplate.getOptions().getFocusTestExpression());
+        assertEquals("/src", configTemplate.getOptions().getWorkingDir());
     }
 
     private @NotNull PsiElement getSpecElement(GoFile file, String specType) {
