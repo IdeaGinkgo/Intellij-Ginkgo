@@ -126,7 +126,7 @@ public class GinkgoTestEventsConverterV2 extends GinkgoTestEventsConverter {
                 return line.length();
             }
 
-            if (line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)) {
+            if (isSuccess(line)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext, TestResult.PASSED, visitor);
                 specCompleted = true;

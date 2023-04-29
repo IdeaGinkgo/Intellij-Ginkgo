@@ -4,11 +4,17 @@
 
 ## [Unreleased]
 ### Fixed
+- Defer Cleanup Blocks being reported as test failures
+
+## [0.9.3] - 2023-04-05
+
+### Fixed
 - Working directory is used from Configuration Template (use with caution)
 - Pipe "|" symbol used in test name escaped in Focus expression
 - Fixed error preventing test execution in GoLand 2023.1
 
 ## [0.9.2] - 2023-03-29
+
 ### Chore
 - Update support to 2023.1
 
@@ -202,7 +208,9 @@
 - Hopefully improved test runner experience
 - Removed recursive flag for focus tests
 
-[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.9.3...HEAD
+[0.9.3]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.7.2...v0.8.0

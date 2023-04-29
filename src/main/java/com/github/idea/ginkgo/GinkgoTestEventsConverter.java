@@ -24,6 +24,8 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     protected static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
     protected static final Pattern START_SKIP_BLOCK = Pattern.compile("S \\[SKIPPED\\]");;
     protected static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
+    protected static final Pattern DEFER_CLEANUP_PASSED = Pattern.compile("\\[DeferCleanup (.*) PASSED");
+    protected static final Pattern DEFER_CLEANUP_FAILED = Pattern.compile("\\[DeferCleanup (.*) FAILED");
     protected static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
     protected static final Pattern LOG_OUTPUT = Pattern.compile("\\d{4}[\\/-]\\d{2}[\\/-]\\d{2}[T ]\\d{2}:\\d{2}:\\d{2}(.*)");
     protected static final String SPEC_SEPARATOR = "------------------------------";
@@ -202,7 +204,7 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
                 return line.length();
             }
 
-            if (line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)) {
+            if (isSuccess(line)) {
                 processOutput(line, outputType, visitor);
                 finishTest(specContext+"/"+specName, TestResult.PASSED, visitor);
                 specCompleted = true;
@@ -214,9 +216,15 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
         return line.length();
     }
 
+    protected static boolean isSuccess(@NotNull String line) {
+        return line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)
+                || DEFER_CLEANUP_PASSED.matcher(line).find();
+    }
+
     protected static boolean isFailure(@NotNull String line) {
         return line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
-                || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4);
+                || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4)
+                || DEFER_CLEANUP_FAILED.matcher(line).find();
     }
 
     protected static boolean isPanic(@NotNull String line) {
@@ -290,7 +298,6 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
         return line.length();
     }
-
 
     /**
      * Add only spec names to pendingSpecList ignoring file location hint output.
