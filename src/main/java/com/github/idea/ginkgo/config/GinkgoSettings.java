@@ -9,9 +9,10 @@ import org.jetbrains.annotations.NotNull;
 @Service
 public final class GinkgoSettings implements PersistentStateComponent<GinkgoSettings> {
     private boolean ginkgoStructViewEnabled;
-
+    private boolean useGoToolsGinkgoEnabled;
     public GinkgoSettings() {
         this.ginkgoStructViewEnabled = true;
+        this.useGoToolsGinkgoEnabled = false;
     }
 
     public static GinkgoSettings getInstance() {
@@ -34,5 +35,13 @@ public final class GinkgoSettings implements PersistentStateComponent<GinkgoSett
 
     public void setGinkgoStructViewEnabled(boolean ginkgoStructViewEnabled) {
         this.ginkgoStructViewEnabled = ginkgoStructViewEnabled;
+    }
+
+    public boolean isUseGoToolsGinkgoEnabled() {
+        return useGoToolsGinkgoEnabled;
+    }
+
+    public void setUseGoToolsGinkgoEnabled(boolean goToUseGoToolsGinkgoEnabled) {
+        this.useGoToolsGinkgoEnabled = goToUseGoToolsGinkgoEnabled;
     }
 }
