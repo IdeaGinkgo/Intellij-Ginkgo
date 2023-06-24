@@ -3,6 +3,7 @@ package com.github.idea.ginkgo.execution.testing;
 import com.github.idea.ginkgo.GinkgoConsoleProperties;
 import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.GinkgoRunConfigurationOptions;
+import com.github.idea.ginkgo.config.GinkgoSettings;
 import com.github.idea.ginkgo.scope.GinkgoScope;
 import com.goide.GoEnvironmentUtil;
 import com.goide.dlv.DlvVm;
@@ -188,7 +189,13 @@ public class GinkgoRunningState implements RunProfileState {
 
     private GeneralCommandLine createCommandLine(GinkgoRunConfigurationOptions runOptions) {
         List<String> commandList = new ArrayList<>();
-        commandList.add(runOptions.getGinkgoExecutable());
+        if (!GinkgoSettings.getInstance().isUseGoToolsGinkgoEnabled()) {
+            commandList.add(runOptions.getGinkgoExecutable());
+        } else {
+            commandList.add(getGoExecutablePath());
+            commandList.add("run");
+            commandList.add("github.com/onsi/ginkgo/v2/ginkgo");
+        }
         commandList.add("-v");
         commandList.addAll(runOptions.getGoToolOptionsList());
         commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
@@ -302,5 +309,11 @@ public class GinkgoRunningState implements RunProfileState {
 
     public void setBuildCommand(String buildCommand) {
         this.buildCommand = buildCommand;
+    }
+
+    private String getGoExecutablePath() {
+        String defaultExecutable = GoEnvironmentUtil.getBinaryFileNameForPath("go");
+        VirtualFile executable = GoSdkUtil.getGoExecutable(sdkRoot);
+        return executable != null ? executable.getPath() : defaultExecutable;
     }
 }
