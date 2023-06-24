@@ -3,8 +3,12 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+
 ### Added
 - Ginkgo settings options to use go tools ginkgo version
+
+### Chore
+- Update Qodana action
 
 ## [0.9.4] - 2023-06-24
 
