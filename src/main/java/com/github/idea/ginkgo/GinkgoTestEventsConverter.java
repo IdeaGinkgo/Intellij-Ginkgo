@@ -24,6 +24,8 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     protected static final Pattern START_PENDING_BLOCK = Pattern.compile("P \\[PENDING\\]");
     protected static final Pattern START_SKIP_BLOCK = Pattern.compile("S \\[SKIPPED\\]");;
     protected static final Pattern START_BEFORE_SUITE_BLOCK = Pattern.compile("\\[BeforeSuite\\]");
+    protected static final Pattern AFTER_SUITE_PASSED = Pattern.compile("\\[AfterSuite(.*) PASSED");
+    protected static final Pattern AFTER_SUITE_FAILED = Pattern.compile("\\[AfterSuite(.*) FAILED");
     protected static final Pattern DEFER_CLEANUP_PASSED = Pattern.compile("\\[DeferCleanup (.*) PASSED");
     protected static final Pattern DEFER_CLEANUP_FAILED = Pattern.compile("\\[DeferCleanup (.*) FAILED");
     protected static final Pattern FILE_LOCATION_OUTPUT = Pattern.compile(".*_test.go:[0-9]*");
@@ -218,13 +220,15 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
 
     protected static boolean isSuccess(@NotNull String line) {
         return line.startsWith(SUCCESS_PREFIX_1) || line.startsWith(SUCCESS_PREFIX_2)
-                || DEFER_CLEANUP_PASSED.matcher(line).find();
+                || DEFER_CLEANUP_PASSED.matcher(line).find()
+                || AFTER_SUITE_PASSED.matcher(line).find();
     }
 
     protected static boolean isFailure(@NotNull String line) {
         return line.startsWith(FAILURE_PREFIX_1) || line.startsWith(FAILURE_PREFIX_2)
                 || line.startsWith(FAILURE_PREFIX_3) || line.startsWith(FAILURE_PREFIX_4)
-                || DEFER_CLEANUP_FAILED.matcher(line).find();
+                || DEFER_CLEANUP_FAILED.matcher(line).find()
+                || AFTER_SUITE_FAILED.matcher(line).find();
     }
 
     protected static boolean isPanic(@NotNull String line) {
@@ -234,6 +238,15 @@ public class GinkgoTestEventsConverter extends GotestEventsConverter {
     }
 
     protected int processBeforeSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
+        if (line.startsWith(SPEC_SEPARATOR)) {
+            inBeforeSuite = false;
+            return line.length();
+        }
+
+        return line.length();
+    }
+
+    protected int processAfterSuiteBlock(@NotNull String line, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) {
         if (line.startsWith(SPEC_SEPARATOR)) {
             inBeforeSuite = false;
             return line.length();
