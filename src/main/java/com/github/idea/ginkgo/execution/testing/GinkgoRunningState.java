@@ -196,7 +196,10 @@ public class GinkgoRunningState implements RunProfileState {
             commandList.add("run");
             commandList.add("github.com/onsi/ginkgo/v2/ginkgo");
         }
-        commandList.add("-v");
+
+        if (!runOptions.getGinkgoAdditionalOptionsList().contains("-vv")) {
+            commandList.add("-v");
+        }
         commandList.addAll(runOptions.getGoToolOptionsList());
         commandList.addAll(runOptions.getGinkgoAdditionalOptionsList());
 
