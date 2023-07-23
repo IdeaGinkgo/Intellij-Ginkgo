@@ -6,6 +6,10 @@
 
 ### Added
 - Ginkgo settings options to use go tools ginkgo version
+- Support -vv flag
+
+### Fixed
+- Correctly parsing AfterSuite blocks
 
 ### Chore
 - Update Qodana action
