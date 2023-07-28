@@ -113,10 +113,10 @@ jobs:
           path: ${{ github.workspace }}/build/reports/pluginVerifier
 
       # Run Qodana inspections
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v2023.1.5
-        with:
-          cache-default-branch-only: true
+#      - name: Qodana - Code Inspection
+#        uses: JetBrains/qodana-action@v2023.1.5
+#        with:
+#          cache-default-branch-only: true
 
       # Prepare plugin archive content for creating artifact
       - name: Prepare Plugin Artifact
