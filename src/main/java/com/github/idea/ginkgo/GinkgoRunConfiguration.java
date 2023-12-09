@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+import static com.intellij.openapi.util.text.Strings.isEmpty;
+
 public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRunConfiguration> {
     @NotNull
     private GinkgoRunConfigurationOptions myOptions;
@@ -42,7 +44,7 @@ public class GinkgoRunConfiguration extends LocatableConfigurationBase<GinkgoRun
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        if (StringUtils.isEmpty(myOptions.getGinkgoExecutable())) {
+        if (isEmpty(myOptions.getGinkgoExecutable())) {
             throw new RuntimeConfigurationException("Ginkgo executable is required");
         }
 

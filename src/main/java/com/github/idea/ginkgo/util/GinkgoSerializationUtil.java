@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intellij.openapi.util.text.Strings.isEmpty;
+
 public class GinkgoSerializationUtil {
     public static final GinkgoSerializationUtil INSTANCE = new GinkgoSerializationUtil();
     private static final String WORKING_DIR = "working-dir";
@@ -81,7 +83,7 @@ public class GinkgoSerializationUtil {
 
     private static String read(Element element, String tagName) {
         String value = JDOMExternalizerUtil.readCustomField(element, tagName);
-        return StringUtils.isEmpty(value) ? "" : value;
+        return isEmpty(value) ? "" : value;
     }
 
     private static GinkgoScope readScope(Element element) {
