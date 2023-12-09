@@ -99,7 +99,6 @@ jobs:
           name: ${{ steps.artifact.outputs.filename }}
           path: ./build/distributions/content/*/*
 
-
   # Run tests and upload a code coverage report
   test:
     name: Test
@@ -232,7 +231,7 @@ jobs:
   releaseDraft:
     name: Release Draft
     if: github.event_name != 'pull_request'
-    needs: build
+    needs: [ build, test, inspectCode, verify ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
