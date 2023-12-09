@@ -18,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intellij.openapi.util.text.Strings.isNotEmpty;
+
 public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOptions implements Serializable {
     private String ginkgoExecutable;
     private String workingDir;
@@ -168,7 +170,7 @@ public class GinkgoRunConfigurationOptions extends LocatableRunConfigurationOpti
     @NotNull
     private String findGinkgoExecutable(Project project) {
         String executable = findGinkgoInGoPath(project);
-        return StringUtils.isNotEmpty(executable) ? executable : findGinkgoByEnv();
+        return isNotEmpty(executable) ? executable : findGinkgoByEnv();
     }
 
     @NotNull
