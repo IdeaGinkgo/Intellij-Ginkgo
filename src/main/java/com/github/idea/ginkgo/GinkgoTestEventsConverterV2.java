@@ -18,7 +18,7 @@ public class GinkgoTestEventsConverterV2 extends GinkgoTestEventsConverter {
     @Override
     protected int processLine(@NotNull String line, int start, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
         Matcher matcher;
-        if (line.startsWith("flag provided but not defined:") || line.startsWith("=== RUN")) {
+        if (line.startsWith("flag provided but not defined:")) {
             startTest("Ginkgo CLI Incompatible", outputType, visitor);
             visitor.visitTestStdErr(new TestStdErr("Ginkgo CLI Incompatible",
                     "An error occurred with ginkgo CLI this usually is a V1/V2 compatibility issue. \n" +

@@ -164,6 +164,6 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
     }
 
     protected void runOnEdt(@NotNull Runnable runnable) {
-        ApplicationManager.getApplication().invokeLater(runnable, ModalityState.NON_MODAL);
+        ApplicationManager.getApplication().invokeLater(runnable, ModalityState.nonModal());
     }
 }
