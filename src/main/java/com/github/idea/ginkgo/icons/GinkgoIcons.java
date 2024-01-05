@@ -3,7 +3,6 @@ package com.github.idea.ginkgo.icons;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.LayeredIcon;
-import com.intellij.ui.icons.IconReplacer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -40,11 +39,6 @@ public final class GinkgoIcons implements Supplier<Icon> {
 
         public int getIconHeight() {
             return Objects.requireNonNull(this.getIcon(0)).getIconHeight();
-        }
-
-        @NotNull
-        public LayeredIconWithShift replaceBy(@NotNull IconReplacer replacer) {
-            return new LayeredIconWithShift(replacer.replaceIcon(Objects.requireNonNull(this.getIcon(0))), this.getIcon(1));
         }
     }
 }
