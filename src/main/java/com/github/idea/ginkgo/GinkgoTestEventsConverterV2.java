@@ -19,18 +19,16 @@ public class GinkgoTestEventsConverterV2 extends GinkgoTestEventsConverter {
     protected int processLine(@NotNull String line, int start, @NotNull Key<?> outputType, @NotNull ServiceMessageVisitor visitor) throws ParseException {
         Matcher matcher;
         if (line.startsWith("flag provided but not defined:")) {
-            startTest("Ginkgo CLI Incompatible", outputType, visitor);
-            visitor.visitTestStdErr(new TestStdErr("Ginkgo CLI Incompatible",
-                    "An error occurred with ginkgo CLI this usually is a V1/V2 compatibility issue. \n" +
-                                "Please make sure the ginkgo CLI version matches the version used by your project. \n" +
-                                "You can install the appropriate CLI by running 'go install github.com/onsi/ginkgo/ginkgo@v1' or " +
-                                "'go install github.com/onsi/ginkgo/v2/ginkgo@v2' \n"));
-            finishTest("Ginkgo CLI Incompatible", TestResult.FAILED, visitor);
+            processOutput(line, outputType, visitor);
+            startTest("Failed to Parse Output", outputType, visitor);
+            visitor.visitTestStdErr(new TestStdErr("Invalid Flag", "the flag was not recognized by ginkgo \n"));
+            finishTest("Failed to Parse Output", TestResult.FAILED, visitor);
             ginkgoCLIException = true;
             return line.length();
         }
 
         if (ginkgoCLIException) {
+            processOutput(line, outputType, visitor);
             return line.length();
         }
 
