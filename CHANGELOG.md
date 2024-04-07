@@ -3,6 +3,10 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Chore
+- Update github actions
+- Add support for 2024.1
+
 ### Bug
 - Log additional details when ginkgo command fails
 
