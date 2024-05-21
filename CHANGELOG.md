@@ -3,9 +3,14 @@
 # Intellij-ginkgo Changelog
 
 ## [Unreleased]
+### Fixed
+- Escape brackets `[]` for focus tests
+- Correctly displays test status for test names containing special characters.
+
+## [0.10.4] - 2024-05-21
 ### Chore
 - Update github actions
-- Add support for 2024.1
+- Add support for 2023.1
 
 ### Bug
 - Log additional details when ginkgo command fails

@@ -115,6 +115,10 @@ public class GinkgoExpression {
         return escapeRegexCharacters(name);
     }
 
+    public String getUnescapedSpecName() {
+        return specDefinition.getArgumentList().getExpressionList().get(0).getText();
+    }
+
     public boolean isDynamicTableEntry() {
         return GinkgoSpec.isTableEntity(getSpecType()) && !(specDefinition.getArgumentList().getExpressionList().get(0) instanceof GoStringLiteral);
     }
@@ -146,7 +150,7 @@ public class GinkgoExpression {
             return "";
         }
 
-        return "gotest://" + GINKGO + "#" + parent.getFocusExpression() + "/" + getSpecName();
+       return "gotest://" + GINKGO + "#" + parent.getFocusExpression() + "/" + getSpecName();
     }
 
     public String getTestURLV2() {
@@ -156,6 +160,17 @@ public class GinkgoExpression {
         }
 
         return "gotest://" + GINKGO + "#" + parent.getFocusExpression() + " " + getSpecName();
+    }
+
+    public String getTestURLV3() {
+        GinkgoExpression parent = getParentSpec();
+        if (parent == null) {
+            return "";
+        }
+
+        return String.format("gotest://%s#%s %s", GINKGO, parent.getFocusExpression(), getUnescapedSpecName()).
+                replace("\"", "").
+                replace("\\", "");
     }
 
     private GinkgoExpression getParentSpec() {

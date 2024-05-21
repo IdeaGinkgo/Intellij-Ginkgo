@@ -59,6 +59,8 @@ public class GinkgoUtil {
         return specName.replace("\"", "")
                 .replace("(", "\\(")
                 .replace(")", "\\)")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
                 .replace("|", "\\\\|");
     }
 
