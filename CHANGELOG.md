@@ -7,6 +7,9 @@
 - Escape brackets `[]` for focus tests
 - Correctly displays test status for test names containing special characters.
 
+### Chore
+- Add support for 2024.2
+
 ## [0.10.4] - 2024-05-21
 ### Chore
 - Update github actions
