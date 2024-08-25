@@ -22,6 +22,10 @@ import static com.github.idea.ginkgo.util.GinkgoUtil.escapeRegexCharacters;
 import static com.goide.psi.impl.manipulator.GoStringManipulator.unquote;
 
 public class GinkgoExpression {
+    // Magnitude value mapping from PoolOfTestStates.java
+    public static final int ERROR_INDEX = 8;
+    public static final int FAILED_INDEX = 6;
+    public static final int COMPLETE_INDEX = 1;
     public static final String WHEN_REGEX = "(when )?";
     public static final GinkgoExpression INVALID_SPEC = new GinkgoExpression(INVALID, null);
     private final GinkgoSpec ginkgoSpec;
@@ -93,21 +97,17 @@ public class GinkgoExpression {
     }
 
     private static Icon getTestStateIcon(TestStateStorage.Record record) {
-        TestStateInfo.Magnitude magnitude = TestIconMapper.getMagnitude(record.magnitude);
-        if (magnitude != null) {
-            switch (magnitude) {
-                case ERROR_INDEX, FAILED_INDEX -> {
-                    return AllIcons.RunConfigurations.TestState.Red2;
-                }
-                case PASSED_INDEX, COMPLETE_INDEX -> {
-                    return AllIcons.RunConfigurations.TestState.Green2;
-                }
-                default -> {
-                    return AllIcons.RunConfigurations.TestState.Run;
-                }
+        switch (record.magnitude) {
+            case ERROR_INDEX, FAILED_INDEX -> {
+                return AllIcons.RunConfigurations.TestState.Red2;
+            }
+            case COMPLETE_INDEX -> {
+                return AllIcons.RunConfigurations.TestState.Green2;
+            }
+            default -> {
+                return AllIcons.RunConfigurations.TestState.Run;
             }
         }
-        return AllIcons.RunConfigurations.TestState.Run;
     }
 
     public String getSpecName() {
