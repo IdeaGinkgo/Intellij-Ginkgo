@@ -4,7 +4,14 @@
 
 ## [Unreleased]
 
+### Chore
+
+- Add support for 2024.3
+
+## [0.10.8] - 2024-11-14
+
 ### Fixed
+
 - Removed references to intellij internal APIs
 
 ## [0.10.6] - 2024-08-25
@@ -320,7 +327,8 @@
 - Hopefully improved test runner experience
 - Removed recursive flag for focus tests
 
-[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.6...HEAD
+[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.8...HEAD
+[0.10.8]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.6...v0.10.8
 [0.10.6]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.5...v0.10.6
 [0.10.5]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.3...v0.10.4
