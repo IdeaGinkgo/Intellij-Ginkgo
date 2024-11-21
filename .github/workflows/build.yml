@@ -195,6 +195,7 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/.ghcup
           sudo rm -rf $AGENT_TOOLSDIRECTORY
+          sudo docker image prune --all --forc
 
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
