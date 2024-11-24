@@ -196,8 +196,8 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
-          tool-cache: false
-          large-packages: false
+          tool-cache: true
+          large-packages: true
 
       # Check out current repository
       - name: Fetch Sources
@@ -213,6 +213,12 @@ jobs:
       # Setup Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      # Create Plugin List
+      - name: Create Plugin List
+        run: |
+          ./gradlew clean
+          ./gradlew printProductsReleases > ./build/listProductReleases.txt
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
