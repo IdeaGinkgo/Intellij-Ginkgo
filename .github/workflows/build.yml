@@ -214,6 +214,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Create Plugin List
+      - name: Create Plugin List
+        run: |
+          ./gradlew clean
+          ./gradlew printProductsReleases > ./build/listProductReleases.txt
+
+      # Cache Plugin Verifier IDEs
+      - name: Setup Plugin Verifier IDEs Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.build.outputs.pluginVerifierHomeDir }}/ides
+          key: plugin-verifier-${{ hashFiles('build/listProductsReleases.txt') }}
+
       # Run Verify Plugin task and IntelliJ Plugin Verifier tool
       - name: Run Plugin Verification tasks
         run: |
