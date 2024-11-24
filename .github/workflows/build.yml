@@ -216,7 +216,9 @@ jobs:
 
       # Create Plugin List
       - name: Create Plugin List
-        run: ./gradlew printProductsReleases > ./build/listProductReleases.txt
+        run: |
+          ./gradlew clean
+          ./gradlew printProductsReleases > ./build/listProductReleases.txt
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
@@ -228,7 +230,6 @@ jobs:
       # Run Verify Plugin task and IntelliJ Plugin Verifier tool
       - name: Run Plugin Verification tasks
         run: |
-          ./gradlew clean
           ./gradlew verifyPlugin -Dplugin.verifier.home.dir=${{ needs.build.outputs.pluginVerifierHomeDir }}
 
       # Collect Plugin Verifier Result
