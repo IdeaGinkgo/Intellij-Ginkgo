@@ -241,8 +241,8 @@ jobs:
           path: ${{ github.workspace }}/build/reports/pluginVerifier
 
       # Report Disk Usage
-      - name: Run Plugin Verification tasks
-        run: du -h /
+      - name: Report Disk Usage
+        run: dh -a
 
   # Prepare a draft release for GitHub Releases page for the manual verification
   # If accepted and published, release workflow would be triggered
