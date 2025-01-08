@@ -2,7 +2,6 @@ package com.github.idea.ginkgo.execution;
 
 import com.github.idea.ginkgo.GinkgoRunConfiguration;
 import com.github.idea.ginkgo.execution.testing.GinkgoBuildRunningState;
-import com.github.idea.ginkgo.execution.testing.GinkgoRemoteRunningState;
 import com.github.idea.ginkgo.execution.testing.GinkgoRunningState;
 import com.goide.dlv.DlvDisconnectOption;
 import com.goide.execution.GoRunUtil;
@@ -15,7 +14,6 @@ import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.runners.AsyncProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.RunContentBuilder;
-import com.intellij.execution.target.TargetEnvironmentRequest;
 import com.intellij.execution.target.TargetProgressIndicator;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.application.ApplicationManager;
@@ -66,9 +64,8 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
             return debugContentDescriptor(environment, (GinkgoRunningState) state);
         }
 
-        if (state instanceof GinkgoRemoteRunningState) {
-            TargetEnvironmentRequest targetEnvironmentRequest = environment.getTargetEnvironmentRequest();
-            ((GinkgoRemoteRunningState) state).prepareTargetEnvironmentRequest(targetEnvironmentRequest, TargetProgressIndicator.EMPTY);
+        if (state instanceof GinkgoRunningState) {
+            ((GinkgoRunningState) state).prepareTargetEnvironmentRequest(environment.getTargetEnvironmentRequest(), TargetProgressIndicator.EMPTY);
         }
 
         // Ginkgo Execute

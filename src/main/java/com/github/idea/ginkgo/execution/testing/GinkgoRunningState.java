@@ -12,6 +12,7 @@ import com.goide.execution.extension.GoExecutorExtension;
 import com.goide.execution.target.GoLanguageRuntimeConfiguration;
 import com.goide.sdk.GoSdkService;
 import com.goide.sdk.GoSdkUtil;
+import com.goide.util.GoCommandLineParameter;
 import com.goide.util.GoExecutor;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
@@ -30,6 +31,7 @@ import com.intellij.execution.target.value.TargetValue;
 import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
+import com.intellij.execution.wsl.target.WslTargetEnvironment;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -39,6 +41,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.EnvironmentUtil;
 import com.intellij.util.ObjectUtils;
+import com.intellij.util.PathUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.net.NetUtils;
 import org.jetbrains.annotations.NotNull;
@@ -112,23 +115,18 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
     private KillableColoredProcessHandler remoteRunProcessHandler() throws ExecutionException {
         GinkgoRunConfigurationOptions runOptions = configuration.getOptions();
         GoLanguageRuntimeConfiguration runTimeConfig = targetEnvironmentRequest.getConfiguration().getRuntimes().findByType(GoLanguageRuntimeConfiguration.class);
-        TargetEnvironment environment = targetEnvironmentRequest.prepareEnvironment(targetProgressIndicator);
+        TargetEnvironment targetEnvironment = targetEnvironmentRequest.prepareEnvironment(targetProgressIndicator);
+        GoCommandLineParameter workingDir = getWSLWorkingDir(targetEnvironment, runOptions.getWorkingDir());
 
         GoExecutor executor = GoExecutor.in(getProject(), null)
-                .withTargetEnvironmentRequest(targetEnvironmentRequest)
-                .withWorkDirectory(runOptions.getWorkingDir())
-                .withWorkDirectory(targetEnvironmentRequest.getProjectPathOnTarget())
+                .withTargetEnvironmentRequest(this.environment.getTargetEnvironmentRequest())
+                .withWorkDirectory(workingDir)
                 .withExePath(runTimeConfig.getGoBinaryPath());
 
-        TargetedCommandLineBuilder commandLineBuilder = executor.createCommandLine(targetEnvironmentRequest);
-        commandLineBuilder.addParameter("test");
-        commandLineBuilder.addParameter("-ginkgo.v");
-        commandLineBuilder.addParameters(runOptions.getGinkgoAdditionalOptionsList());
-
         ProgressIndicator indicator = ObjectUtils.notNull(ProgressManager.getInstance().getProgressIndicator(), new EmptyProgressIndicator());
-        TargetedCommandLine commandLine = commandLineBuilder.build();
-        Process process = environment.createProcess(commandLine, indicator);
-        String commandRepresentation = commandLine.getCommandPresentation(environment);
+        TargetedCommandLine commandLine = createRemoteCommandLine(executor, runOptions);
+        Process process = targetEnvironment.createProcess(commandLine, indicator);
+        String commandRepresentation = commandLine.getCommandPresentation(targetEnvironment);
 
         KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(process, commandRepresentation) {
             @Override
@@ -177,6 +175,10 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
         //Can not debug multiple packages at the same time each package is compiled into its own test package for debugging
         if (runOptions.getGinkgoScope() == GinkgoScope.ALL) {
             throw new ExecutionException("Can not debug on test scope all");
+        }
+
+        if (!(targetEnvironmentRequest instanceof LocalTargetEnvironmentRequest)) {
+            throw new ExecutionException("Remote debugging is not yet supported");
         }
 
         Couple<String> pathEntry = updatePath(EnvironmentUtil.getEnvironmentMap());
@@ -270,6 +272,35 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
                 throw new IllegalStateException("Unexpected value: " + runOptions.getGinkgoScope());
         }
         return new GeneralCommandLine(commandList);
+    }
+
+    private TargetedCommandLine createRemoteCommandLine(GoExecutor executor, GinkgoRunConfigurationOptions runOptions) throws ExecutionException {
+        TargetedCommandLineBuilder commandLineBuilder = executor.createCommandLine(targetEnvironmentRequest);
+        commandLineBuilder.addParameter("run");
+        commandLineBuilder.addParameter("github.com/onsi/ginkgo/v2/ginkgo");
+        if (!runOptions.getGinkgoAdditionalOptionsList().contains("-vv")) {
+            commandLineBuilder.addParameter("-v");
+        }
+
+        commandLineBuilder.addParameters(runOptions.getGoToolOptionsList());
+        commandLineBuilder.addParameters(runOptions.getGinkgoAdditionalOptionsList());
+
+        if (runOptions.isRerun()) {
+            commandLineBuilder.addParameter("-r");
+        }
+
+        switch (runOptions.getGinkgoScope()) {
+            case ALL:
+                commandLineBuilder.addParameter("-r");
+                break;
+            case FOCUS:
+                commandLineBuilder.addParameter(String.format("--focus=%s", runOptions.getFocusTestExpression()));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + runOptions.getGinkgoScope());
+        }
+
+        return commandLineBuilder.build();
     }
 
     private GeneralCommandLine createDebugCommandLine() throws ExecutionException {
@@ -376,6 +407,23 @@ public class GinkgoRunningState implements TargetEnvironmentAwareRunProfileState
     public void handleCreatedTargetEnvironment(@NotNull TargetEnvironment targetEnvironment, @NotNull TargetProgressIndicator targetProgressIndicator) throws ExecutionException {
 
     }
+
+    private GoCommandLineParameter getWSLWorkingDir(TargetEnvironment targetEnvironment, String workingDir) {
+        if (!(targetEnvironment instanceof WslTargetEnvironment wslTargetEnvironment)){
+            return null;
+        }
+
+        String systemDependentName = PathUtil.toSystemDependentName(workingDir);
+        Optional<TargetEnvironment.SynchronizedVolume> volume = wslTargetEnvironment.getSynchronizedVolumes()
+                .stream()
+                .filter(v -> systemDependentName.startsWith(v.getLocalRootPath().toString()))
+                .findFirst();
+
+        TargetEnvironment.SynchronizedVolume synchronizedVolume = volume.orElseThrow();
+        String wslDir = systemDependentName.replace(synchronizedVolume.getLocalRootPath().toString(), synchronizedVolume.getTargetPath() + "/");
+        return GoCommandLineParameter.string(PathUtil.toSystemIndependentName(wslDir));
+    }
+
 
     private String getGoExecutablePath() {
         String defaultExecutable = GoEnvironmentUtil.getBinaryFileNameForPath("go");
