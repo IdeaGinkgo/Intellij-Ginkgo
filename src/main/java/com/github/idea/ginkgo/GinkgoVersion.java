@@ -24,6 +24,10 @@ public class GinkgoVersion {
         this.patch = patch;
     }
 
+    public String toString() {
+        return major + "." + minor + "." + patch;
+    }
+
     public int getMajor() {
         return major;
     }

@@ -11,6 +11,7 @@ import com.intellij.execution.testframework.sm.runner.OutputToGeneralTestEventsC
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties;
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView;
 import com.intellij.execution.ui.ConsoleView;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GinkgoConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
+    public static final Logger LOG = Logger.getInstance(GinkgoConsoleProperties.class);
 
     public GinkgoConsoleProperties(@NotNull GinkgoRunConfiguration configuration, @NotNull String testFrameworkName, @NotNull Executor executor) {
         super(configuration, testFrameworkName, executor);
@@ -54,8 +56,12 @@ public class GinkgoConsoleProperties extends SMTRunnerConsoleProperties implemen
                 .findFirst()
                 .map(VgoDependency::getVersion)
                 .map(GinkgoVersion::of)
-                .orElse(GinkgoVersion.DEFAULT_VERSION);
+                .orElseGet(() -> {
+                    LOG.warn("No github.com/onsi/ginkgo version found in go.mod defaulting to 0.0.0");
+                    return GinkgoVersion.DEFAULT_VERSION;
+                });
 
+        LOG.info("Ginkgo version: " + importedVersion.toString());
         return importedVersion.greaterThan(version) || importedVersion.equals(version);
     }
 }
