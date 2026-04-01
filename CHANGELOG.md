@@ -6,6 +6,12 @@
 
 ### Chore
 
+- Add support for 2026.1
+
+## [0.10.9]
+
+### Chore
+
 - Add support for 2025.1
 
 ## [0.10.8] - 2024-11-14
