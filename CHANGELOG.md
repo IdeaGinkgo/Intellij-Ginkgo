@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.10.10] - 2026-04-05
+
 ### Chore
 
 - Add support for 2026.1
@@ -333,7 +335,9 @@
 - Hopefully improved test runner experience
 - Removed recursive flag for focus tests
 
-[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.8...HEAD
+[Unreleased]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.10...HEAD
+[0.10.10]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.9...v0.10.10
+[0.10.9]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.8...v0.10.9
 [0.10.8]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.6...v0.10.8
 [0.10.6]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.5...v0.10.6
 [0.10.5]: https://github.com/IdeaGinkgo/Intellij-Ginkgo/compare/v0.10.4...v0.10.5
