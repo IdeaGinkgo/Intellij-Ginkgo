@@ -6,7 +6,6 @@ import com.intellij.execution.configuration.EnvironmentVariablesData;
 import com.intellij.openapi.util.JDOMExternalizerUtil;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -78,7 +78,7 @@ public class GinkgoBuildRunningState implements RunProfileState {
         buildCommand = commandLine.getCommandLineString();
         KillableColoredProcessHandler processHandler = new KillableColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler);
-        processHandler.addProcessListener(new ProcessAdapter() {
+        processHandler.addProcessListener(new ProcessListener() {
             @Override
             public void processTerminated(@NotNull ProcessEvent event) {
                 if (event.getExitCode() != 0) {

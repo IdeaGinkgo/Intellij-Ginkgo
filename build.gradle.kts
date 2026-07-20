@@ -2,6 +2,8 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.tooling.core.mutableExtrasOf
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
     id("java") // Java support
@@ -15,9 +17,19 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-// Set the JVM language level used to build project. Use Java 21 for 2026.1+.
+// IntelliJ Platform 2026.2 runs on Java 25.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(25)
+}
+
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 // Configure project's dependencies
@@ -44,6 +56,11 @@ dependencies {
 
         // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
+
+        // The test runner APIs moved into a bundled plugin in IntelliJ Platform 2026.2.
+        bundledPlugin("intellij.testRunner.plugin")
+        // Go's debugger API references this platform module in 2026.2.
+        bundledModule("intellij.platform.scriptDebugger.backend")
 
         pluginVerifier()
         zipSigner()

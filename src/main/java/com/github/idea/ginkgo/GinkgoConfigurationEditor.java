@@ -6,6 +6,7 @@ import com.intellij.execution.configuration.EnvironmentVariablesTextFieldWithBro
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.components.fields.ExpandableTextField;
@@ -23,7 +24,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
 
     private TextFieldWithBrowseButton ginkgoExecutableField = createGinkgoExecutableField();
     private TextFieldWithBrowseButton workingDirectory = createWorkingDirectoryField();
-    private EnvironmentVariablesTextFieldWithBrowseButton envVars = new EnvironmentVariablesTextFieldWithBrowseButton();
+    private EnvironmentVariablesTextFieldWithBrowseButton envVars;
     private RawCommandLineEditor ginkgoAdditionalOptions = createGinkgoOptionsField();
     private RawCommandLineEditor goToolOptions = createGoToolOptionsField();
     private JPanel scopeViewPanel = new JPanel(new BorderLayout());
@@ -37,6 +38,7 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
     public GinkgoConfigurationEditor(Project project) {
         super();
         this.project = project;
+        envVars = new EnvironmentVariablesTextFieldWithBrowseButton(project);
         ginkgoForm = new FormBuilder()
                 .setAlignLabelOnRight(false)
                 .addLabeledComponent("Ginkgo executable", ginkgoExecutableField)
@@ -199,12 +201,11 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
      */
     private TextFieldWithBrowseButton createGinkgoExecutableField() {
         TextFieldWithBrowseButton fullField = new TextFieldWithBrowseButton();
-        SwingHelper.installFileCompletionAndBrowseDialog(
-                project,
-                fullField,
-                "Select override Ginkgo executable file",
+        fullField.addBrowseFolderListener(new TextBrowseFolderListener(
                 FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
-        );
+                        .withTitle("Select override Ginkgo executable file"),
+                project
+        ));
         return fullField;
     }
 
@@ -213,12 +214,10 @@ public class GinkgoConfigurationEditor extends SettingsEditor<GinkgoRunConfigura
      */
     private TextFieldWithBrowseButton createWorkingDirectoryField() {
         TextFieldWithBrowseButton fullField = new TextFieldWithBrowseButton();
-        SwingHelper.installFileCompletionAndBrowseDialog(
-                project,
-                fullField,
-                "Select working directory",
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        );
+        fullField.addBrowseFolderListener(new TextBrowseFolderListener(
+                FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle("Select working directory"),
+                project
+        ));
         return fullField;
     }
 

@@ -25,6 +25,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebuggerManager;
+import com.intellij.xdebugger.XSessionStartedResult;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,7 +126,11 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
         try {
             ExecutionResult executionResult = state.execute(environment.getExecutor(), this);
             XDebugProcessStarter starter = createDebugProcessStarter(executionResult, address);
-            runResult.setResult(XDebuggerManager.getInstance(environment.getProject()).startSession(environment, starter).getRunContentDescriptor());
+            XSessionStartedResult session = XDebuggerManager.getInstance(environment.getProject())
+                    .newSessionBuilder(starter)
+                    .environment(environment)
+                    .startSession();
+            runResult.setResult(session.getRunContentDescriptor());
         } catch (ExecutionException executionException) {
             runResult.setError(executionException);
         }
@@ -164,6 +169,6 @@ public class GinkgoRunner extends AsyncProgramRunner<RunnerSettings> {
     }
 
     protected void runOnEdt(@NotNull Runnable runnable) {
-        ApplicationManager.getApplication().invokeLater(runnable, ModalityState.NON_MODAL);
+        ApplicationManager.getApplication().invokeLater(runnable, ModalityState.nonModal());
     }
 }

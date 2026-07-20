@@ -11,11 +11,11 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ArrayUtil;
-import com.intellij.util.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.function.Function;
 
 public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
     private static final Function<PsiElement, String> TOOLTIP_PROVIDER = element -> "Ginkgo Test";
@@ -33,15 +33,15 @@ public class GinkgoRunLineMarkerProvider extends RunLineMarkerContributor {
         GinkgoExpression ginkgoExpression = GinkgoExpression.fromPsiElement(e);
         if (ginkgoExpression.isValid()) {
             if (ginkgoExpression.isDynamicTableEntry()) {
-                return new Info(GinkgoIcons.DISABLE_SPEC_ICON, TOOLTIP_WARNING, DISABLE_SPEC_ACTION);
+                return new Info(GinkgoIcons.DISABLE_SPEC_ICON, new AnAction[]{DISABLE_SPEC_ACTION}, TOOLTIP_WARNING);
             }
 
             if (!ginkgoExpression.isActive()) {
-                return new Info(GinkgoIcons.DISABLED_TEST_ICON, TOOLTIP_PROVIDER, ENABLE_SPEC_ACTION);
+                return new Info(GinkgoIcons.DISABLED_TEST_ICON, new AnAction[]{ENABLE_SPEC_ACTION}, TOOLTIP_PROVIDER);
             }
 
             if (ginkgoExpression.isActive()) {
-                return new Info(getTestIcon(ginkgoExpression), TOOLTIP_PROVIDER, getRunActions());
+                return new Info(getTestIcon(ginkgoExpression), getRunActions(), TOOLTIP_PROVIDER);
             }
         }
 

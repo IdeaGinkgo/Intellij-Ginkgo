@@ -1,4 +1,5 @@
 .gradle
+.intellijPlatform
 .idea
 .run
 build
