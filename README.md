@@ -48,10 +48,12 @@ I am looking for help in general, but some specific topics include:
   - Installing plugin: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Ginkgo"</kbd> >
     <kbd>Install Plugin</kbd>
     
-- Using IDE built-in plugin beta channel system:  
-  - Adding the beta channel: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Manage Plugin Repositories...</kbd> add link `https://plugins.jetbrains.com/plugins/beta/list`
+- Using automated beta builds from the latest successful `master` commit:
+  - Add the beta repository: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Manage Plugin Repositories...</kbd> add link `https://ideaginkgo.github.io/Intellij-Ginkgo/updatePlugins.xml`
   - Installing plugin: <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Ginkgo"</kbd> >
   <kbd>Install Plugin</kbd>
+  - Beta builds are unsigned, so the IDE may ask you to trust them.
+  - Remove this repository to return to Marketplace stable updates.
   
 - Manually:
 

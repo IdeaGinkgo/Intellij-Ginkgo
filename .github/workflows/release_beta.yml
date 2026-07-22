@@ -1,0 +1,132 @@
+# GitHub Actions Workflow for publishing the latest successful master beta plugin repository.
+
+name: Release Beta
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: release-beta
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+
+  # Prepare, validate, and package the latest beta plugin repository.
+  build:
+    name: Build Beta Plugin
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+
+      # Free GitHub Actions Environment Disk Space
+      - name: Maximize Build Space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          large-packages: true
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Validate wrapper
+      - name: Gradle Wrapper Validation
+        uses: gradle/actions/wrapper-validation@v4
+
+      # Set up Java environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
+
+      # Setup Gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Generate an ordered beta version for the triggering commit.
+      # The numeric revision makes it newer than the current stable version.
+      - name: Export Properties
+        id: properties
+        shell: bash
+        run: |
+          BASE_VERSION="$(awk -F ' *= *' '$1 == "pluginVersion" { print $2; exit }' gradle.properties | tr -d '\r')"
+          COMMIT_COUNT="$(git rev-list --count HEAD)"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          VERSION="${BASE_VERSION}.${COMMIT_COUNT}-beta.g${SHORT_SHA}"
+
+          test -n "$BASE_VERSION"
+          test -n "$COMMIT_COUNT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      # Run tests, IntelliJ Plugin Verifier, and build the plugin archive.
+      # Kover needs more heap than Gradle's default 512 MiB for this project.
+      - name: Build Plugin
+        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m" clean check verifyPlugin buildPlugin -PpluginVersion="${{ steps.properties.outputs.version }}"
+
+      # Configure GitHub Pages and prepare its custom plugin repository.
+      - name: Prepare Beta Repository
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Create Plugin Repository
+        shell: bash
+        run: |
+          ARCHIVE="build/distributions/Intellij-Ginkgo-${{ steps.properties.outputs.version }}.zip"
+          FILENAME="${ARCHIVE##*/}"
+          test -f "$ARCHIVE"
+
+          mkdir -p _site
+          cp "$ARCHIVE" "_site/${FILENAME}"
+
+          PLUGIN_ID="$(awk -F '[<>]' '/^[[:space:]]*<id>/{ print $3; exit }' src/main/resources/META-INF/plugin.xml)"
+          SINCE_BUILD="$(awk -F ' *= *' '$1 == "pluginSinceBuild" { print $2; exit }' gradle.properties | tr -d '\r')"
+          UNTIL_BUILD="$(awk -F ' *= *' '$1 == "pluginUntilBuild" { print $2; exit }' gradle.properties | tr -d '\r')"
+
+          test -n "$PLUGIN_ID"
+          test -n "$SINCE_BUILD"
+
+          IDEA_VERSION_ATTRIBUTES="since-build=\"${SINCE_BUILD}\""
+          if [[ -n "$UNTIL_BUILD" ]]; then
+            IDEA_VERSION_ATTRIBUTES+=" until-build=\"${UNTIL_BUILD}\""
+          fi
+
+          cat > _site/updatePlugins.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <plugins>
+            <plugin id="${PLUGIN_ID}" url="${{ steps.pages.outputs.base_url }}/${FILENAME}" version="${{ steps.properties.outputs.version }}">
+              <idea-version ${IDEA_VERSION_ATTRIBUTES}/>
+            </plugin>
+          </plugins>
+          EOF
+
+      # Upload the custom plugin repository as the GitHub Pages deployment artifact.
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  # Publish the repository only after the validated beta archive is ready.
+  deploy:
+    name: Deploy Beta Repository
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+
+      # Deploy the custom plugin repository to GitHub Pages.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
